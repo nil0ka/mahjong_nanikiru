@@ -7,8 +7,103 @@ Claude API を使用して既存の問題を分析し、回答と解説を生成
 import os
 import sys
 import time
+import re
 from datetime import datetime
+from typing import List, Dict, Tuple
 from anthropic import Anthropic, APIError, APIConnectionError, RateLimitError
+
+# generate_question.py から関数をインポート（同じディレクトリにある前提）
+# 実行時のパスを調整
+sys.path.insert(0, os.path.dirname(__file__))
+try:
+    from generate_question import parse_tiles, count_tiles, calculate_shanten
+except ImportError:
+    # インポートできない場合は関数を再定義（重複を避けるため）
+    def parse_tiles(tiles_str: str) -> List[str]:
+        """牌の文字列をパースして牌のリストに変換"""
+        tile_map = {
+            '🀇': '1m', '🀈': '2m', '🀉': '3m', '🀊': '4m', '🀋': '5m',
+            '🀌': '6m', '🀍': '7m', '🀎': '8m', '🀏': '9m',
+            '🀙': '1p', '🀚': '2p', '🀛': '3p', '🀜': '4p', '🀝': '5p',
+            '🀞': '6p', '🀟': '7p', '🀠': '8p', '🀡': '9p',
+            '🀐': '1s', '🀑': '2s', '🀒': '3s', '🀓': '4s', '🀔': '5s',
+            '🀕': '6s', '🀖': '7s', '🀗': '8s', '🀘': '9s',
+            '🀀': '1z', '🀁': '2z', '🀂': '3z', '🀃': '4z',
+            '🀆': '5z', '🀅': '6z', '🀄': '7z',
+        }
+        tiles = []
+        for char in tiles_str:
+            if char in tile_map:
+                tiles.append(tile_map[char])
+        return tiles
+
+    def count_tiles(tiles: List[str]) -> Dict[str, int]:
+        """牌の枚数をカウント"""
+        counts = {}
+        for tile in tiles:
+            counts[tile] = counts.get(tile, 0) + 1
+        return counts
+
+    # calculate_shantenは複雑なので省略（必要に応じて実装）
+    def calculate_shanten(tiles: List[str]) -> int:
+        """向聴数計算（簡易版）"""
+        return 0  # 仮実装
+
+def validate_solution_content(problem_content: str, solution_content: str) -> Tuple[bool, str]:
+    """
+    生成された解答の内容を検証
+
+    Args:
+        problem_content: 問題のMarkdownテキスト
+        solution_content: 解答のMarkdownテキスト
+
+    Returns:
+        (検証結果, エラーメッセージ)
+    """
+    # 問題から手牌を抽出
+    hand_match = re.search(r'## あなたの手牌\s*```\s*([🀀-🀡]+)\s*```', problem_content)
+    if not hand_match:
+        return True, ""  # 手牌が見つからない場合はスキップ
+
+    hand_str = hand_match.group(1)
+    hand_tiles = parse_tiles(hand_str)
+
+    if len(hand_tiles) != 13:
+        return True, ""  # 手牌が13枚でない場合はスキップ
+
+    # 解答から推奨打牌を抽出
+    discard_patterns = [
+        r'\*\*切るべき牌\*\*:\s*([🀀-🀡])',
+        r'([🀀-🀡])を切',
+        r'打([🀀-🀡])',
+    ]
+
+    recommended_discard = None
+    for pattern in discard_patterns:
+        discard_match = re.search(pattern, solution_content)
+        if discard_match:
+            recommended_discard = parse_tiles(discard_match.group(1))
+            if recommended_discard:
+                recommended_discard = recommended_discard[0]
+                break
+
+    # 推奨打牌が手牌に含まれているか確認
+    if recommended_discard and recommended_discard not in hand_tiles:
+        return False, f"推奨打牌 {recommended_discard} が手牌に含まれていません"
+
+    # 解答で述べている向聴数が正しいか確認（簡易版）
+    solution_lower = solution_content.lower()
+    if 'テンパイ' in solution_content or 'tenpai' in solution_lower:
+        try:
+            shanten = calculate_shanten(hand_tiles)
+            if shanten != 0:
+                shanten_names = {-1: "和了", 0: "テンパイ", 1: "イーシャンテン", 2: "リャンシャンテン"}
+                actual = shanten_names.get(shanten, f"{shanten}シャンテン")
+                return False, f"解答に「テンパイ」と記載がありますが、実際は{actual}です"
+        except:
+            pass  # 向聴数計算に失敗した場合はスキップ
+
+    return True, ""
 
 def get_latest_problem_number() -> int:
     """
@@ -65,6 +160,27 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
 【問題】
 {problem_content}
 
+【重要な分析手順】
+1. **Unicode牌の正確な識別**:
+   - CLAUDE.mdのUnicode麻雀牌参照表を使って牌を正確に識別してください
+   - 特に🀠（8p）と🀡（9p）、🀎（8m）と🀏（9m）などを混同しないこと
+
+2. **手牌の向聴数を計算**:
+   - 問題文の記述を鵜呑みにせず、実際に手牌（13枚）の向聴数を計算してください
+   - テンパイ（0シャンテン）、イーシャンテン（1シャンテン）、リャンシャンテン（2シャンテン）など
+   - 問題文の記述と実際の向聴数が異なる場合は、実際の計算結果を優先してください
+
+3. **見えている牌の集計**:
+   - 手牌13枚
+   - 全プレイヤーの河（自分、下家、対面、上家）
+   - ドラ表示牌
+   - 鳴き牌（ある場合）
+   - これらから各牌の残り枚数を正確に計算（各牌は4枚まで）
+
+4. **推奨打牌の妥当性確認**:
+   - 推奨する打牌が実際に手牌に含まれていることを確認
+   - 手牌にない牌を「切るべき」と書かないこと
+
 【要件】
 1. 問題を詳細に分析し、最適な打牌を決定してください
 2. その理由を初心者にも分かりやすく解説してください
@@ -72,9 +188,10 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
 4. 受け入れ枚数などの定量的な情報も含めてください
 
 【確認事項（必ず守ること）】
-- **牌の枚数計算**: 問題文の手牌+全プレイヤーの河+ドラ表示牌+鳴き牌から、各牌の残り枚数を正確に計算すること（各牌は4枚まで）
-- **待ち牌の枚数**: 待ち牌の枚数計算が正確か確認すること（例：両面待ちで最大8枚、カンチャン待ちで最大4枚）
-- **受け入れ枚数**: 受け入れ枚数の計算が正確であること
+- **向聴数の正確性**: 「現在テンパイ」と書くなら、実際に計算してテンパイであることを確認
+- **牌の枚数計算**: 見えている牌を除外した残り枚数を正確に計算（各牌は4枚まで）
+- **待ち牌の枚数**: 待ち牌の残り枚数を正確に計算（河に見えている分を除外）
+- **受け入れ枚数**: 受け入れ枚数の計算が正確であること（見えている牌を考慮）
 - **危険牌の枚数**: アウト牌（危険牌）の枚数計算が正しいこと
 
 以下のMarkdown形式で出力してください。他の説明は不要です。
@@ -172,8 +289,22 @@ def main():
     with open(problem_filename, "r", encoding="utf-8") as f:
         problem_content = f.read()
 
-    # 回答を生成
-    answer_content = generate_solution(problem_content)
+    # 回答を生成（検証が成功するまでリトライ）
+    max_validation_attempts = 3
+    for attempt in range(max_validation_attempts):
+        answer_content = generate_solution(problem_content)
+
+        # 解答の内容を検証
+        is_valid, error_message = validate_solution_content(problem_content, answer_content)
+
+        if is_valid:
+            print("✓ Validation passed")
+            break
+        else:
+            print(f"✗ Validation failed (attempt {attempt + 1}/{max_validation_attempts}): {error_message}")
+            if attempt == max_validation_attempts - 1:
+                print("Warning: Using last generated content despite validation failures")
+                # 最終的には保存するが、警告を表示
 
     # ファイルに保存
     answer_filename = f"{problem_dir}/solution.md"

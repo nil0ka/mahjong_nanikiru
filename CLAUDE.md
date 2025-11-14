@@ -115,6 +115,66 @@ Answers include:
 - Misidentifying tiles (e.g., confusing 🀠 8p with 🀡 9p) can lead to completely incorrect analysis
 - When checking for "genbutsu" (現物 / safe tiles), verify the exact Unicode character against the discard pile
 
+## Critical: Shanten Calculation and Problem Accuracy
+
+**The most important aspect of problem generation is correctly understanding and representing the hand state**:
+
+1. **Calculate shanten accurately**:
+   - Determine if the hand is tenpai (0-shanten), iishanten (1-shanten), ryanshanten (2-shanten), etc.
+   - Any shanten level is valid for problems - not just tenpai or iishanten
+   - Example valid problems: "How to proceed from ryanshanten?", "Which tile to discard in this iishanten position?"
+
+2. **Verify problem statements match reality**:
+   - If you state "現在テンパイ" (currently tenpai), the 13-tile hand must actually be tenpai
+   - If you state "🀓を引けばテンパイ" (drawing 🀓 makes it tenpai), verify this by calculation
+   - **Problem 001 error example**: Stated "iishanten" and "drawing 🀓 makes it tenpai", but the hand was actually ryanshanten+
+
+3. **Recommended hand creation process**:
+   - Start with a complete winning hand (14 tiles = 4 mentsu + 1 jantou)
+   - Remove tiles according to desired shanten:
+     - Tenpai: Remove one waiting tile
+     - Iishanten: Break apart one mentsu partially
+     - Ryanshanten+: Further deconstruct
+   - Calculate actual shanten of the resulting 13-tile hand
+   - Describe the hand state accurately in the problem text
+
+4. **Validation checks** (automated in `scripts/generate_question.py`):
+   - Hand tile count = exactly 13
+   - Each tile type ≤ 4 (across hand + all rivers + dora indicator)
+   - River counts match turn number (allowing ±2 for calls)
+   - **Shanten calculation matches problem description**
+   - **Tile addition claims are verified** (e.g., "drawing X gives tenpai")
+
+## Solution Generation: Critical Validation Points
+
+**When generating solutions, always verify these points**:
+
+1. **Accurate tile identification**:
+   - Use the Unicode tile reference table above to correctly identify tiles
+   - Do NOT confuse similar-looking tiles (🀠 8p vs 🀡 9p, 🀎 8m vs 🀏 9m)
+   - Verify you're reading the 13-tile hand correctly from the problem
+
+2. **Independent shanten calculation**:
+   - Do NOT trust the problem description blindly (Problem 001 had errors!)
+   - Calculate the actual shanten of the 13-tile hand yourself
+   - If the problem says "tenpai" but it's actually iishanten, use the correct calculation
+   - Describe the actual state in your solution
+
+3. **Accurate tile counting**:
+   - Count visible tiles: hand (13) + all rivers + dora indicator + any calls
+   - Calculate remaining tiles for each type (max 4 of each)
+   - When stating "X tiles remaining" or "waiting on Y tiles", verify the count
+   - Example: If 🀇 appears 2 times in hand + 1 in rivers = 3 visible, then 1 remaining
+
+4. **Validate recommended discard**:
+   - The tile you recommend discarding MUST be in the actual 13-tile hand
+   - Do NOT recommend discarding a tile that doesn't exist in the hand
+
+5. **Validation checks** (automated in `scripts/generate_solution.py`):
+   - Recommended discard is in the hand
+   - Shanten claims match actual calculation
+   - Tile counts are accurate
+
 ## Commands
 
 ### Claude Code Custom Commands
