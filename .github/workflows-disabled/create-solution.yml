@@ -1,0 +1,87 @@
+name: Create Daily Mahjong Solution
+
+on:
+  schedule:
+    # 毎日午後6時（UTC 9時）に実行
+    - cron: '0 9 * * *'
+  workflow_dispatch: # 手動実行も可能にする
+
+jobs:
+  create-solution:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic
+
+      - name: Get problem number and date
+        id: info
+        run: |
+          # 最新の問題番号を取得
+          PROBLEM_NUMBER=$(ls -d problems/*/ | wc -l)
+          PROBLEM_NUMBER_PADDED=$(printf "%03d" $PROBLEM_NUMBER)
+          echo "problem_number=$PROBLEM_NUMBER_PADDED" >> $GITHUB_OUTPUT
+          echo "today=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Generate answer
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/generate_solution.py
+
+      - name: Create branch and commit answer
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git checkout -b answer-${{ steps.info.outputs.problem_number }}
+          git add problems/${{ steps.info.outputs.problem_number }}/solution.md
+          git commit -m "Add answer for problem #${{ steps.info.outputs.problem_number }}"
+          git push origin answer-${{ steps.info.outputs.problem_number }}
+
+      - name: Create pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ANSWER_FILE="problems/${{ steps.info.outputs.problem_number }}/solution.md"
+          ANSWER_CONTENT=$(cat "$ANSWER_FILE")
+
+          gh pr create \
+            --title "何切る問題の回答 #${{ steps.info.outputs.problem_number }}" \
+            --body "$ANSWER_CONTENT" \
+            --base main \
+            --head answer-${{ steps.info.outputs.problem_number }} \
+            --label "daily-answer"
+
+      - name: Auto-merge pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # PR番号を取得
+          PR_NUMBER=$(gh pr list --head answer-${{ steps.info.outputs.problem_number }} --json number --jq '.[0].number')
+
+          # PRをマージ
+          gh pr merge $PR_NUMBER --squash --auto
+
+      - name: Close corresponding issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # 対応する問題番号のissueを検索してクローズ
+          ISSUE_NUMBER=$(gh issue list --label "daily-problem" --search "何切る問題 #${{ steps.info.outputs.problem_number }}" --json number --jq '.[0].number')
+
+          if [ -n "$ISSUE_NUMBER" ]; then
+            gh issue close $ISSUE_NUMBER --comment "回答が公開されました。Pull Request をご確認ください。"
+          fi

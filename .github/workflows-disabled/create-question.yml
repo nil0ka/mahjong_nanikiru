@@ -1,0 +1,62 @@
+name: Create Daily Mahjong Question
+
+on:
+  schedule:
+    # 毎日午前9時（UTC 0時）に実行
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 手動実行も可能にする
+
+jobs:
+  create-question:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic
+
+      - name: Generate problem
+        id: generate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/generate_question.py
+          # 生成された問題番号を取得
+          PROBLEM_NUMBER=$(ls -d problems/*/ | wc -l)
+          PROBLEM_NUMBER_PADDED=$(printf "%03d" $PROBLEM_NUMBER)
+          echo "problem_number=$PROBLEM_NUMBER_PADDED" >> $GITHUB_OUTPUT
+
+      - name: Get today's date
+        id: date
+        run: echo "today=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Commit and push problem
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add problems/${{ steps.generate.outputs.problem_number }}/
+          git commit -m "Add problem #${{ steps.generate.outputs.problem_number }} (${{ steps.date.outputs.today }})"
+          git push
+
+      - name: Create issue with problem
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PROBLEM_FILE="problems/${{ steps.generate.outputs.problem_number }}/question.md"
+          PROBLEM_CONTENT=$(cat "$PROBLEM_FILE")
+
+          gh issue create \
+            --title "何切る問題 #${{ steps.generate.outputs.problem_number }} - ${{ steps.date.outputs.today }}" \
+            --body "$PROBLEM_CONTENT" \
+            --label "daily-problem"

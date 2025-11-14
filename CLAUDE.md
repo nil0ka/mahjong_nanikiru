@@ -1,0 +1,141 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+This repository contains a collection of "What to discard" (nanikiru) problems for Mahjong. Problems and answers are generated using Claude AI.
+
+**Current Status**: Manual operation using Claude Code custom commands.
+
+**Future Plan**: Automate daily problem/answer generation via GitHub Actions (requires Anthropic API key).
+
+## Architecture
+
+### Current Workflow (Manual)
+
+Problems and answers are generated manually using:
+- Claude Code custom commands (`/create-question`, `/create-solution`)
+- Python scripts (`scripts/generate_question.py`, `scripts/generate_solution.py`)
+
+### Future Automated Workflow (Planned)
+
+Once Anthropic API key is obtained:
+
+1. **Problem Generation (9:00 AM JST)**
+   - GitHub Actions triggers `scripts/generate_question.py`
+   - Problem saved as `problems/NNN/question.md`
+   - GitHub Issue created with the problem
+
+2. **Answer Generation (6:00 PM JST)**
+   - GitHub Actions triggers `scripts/generate_solution.py`
+   - Answer saved as `problems/NNN/solution.md`
+   - Pull Request created with the answer
+   - PR auto-merged and corresponding Issue closed
+
+**Note**: Workflow files are currently in `.github/workflows-disabled/`. Move to `.github/workflows/` to enable automation.
+
+### Directory Structure
+
+- `problems/` - Generated problems and answers (Markdown format)
+- `scripts/` - Python scripts for generating content via Claude API
+- `.claude/commands/` - Custom commands for Claude Code CLI
+- `.github/workflows-disabled/` - GitHub Actions workflows (currently disabled)
+
+## Key Concepts
+
+### Mahjong Problem Format
+
+Problems use Unicode Mahjong tiles (🀇-🀏 萬子、🀙-🀡 筒子、🀐-🀘 索子、🀀-🀆 字牌) and include:
+- **Difficulty level**: 10-point scale (★☆☆☆☆☆☆☆☆☆ 1/10 to ★★★★★★★★★★ 10/10)
+- **Theme**: Problem category (e.g., Riichi decision, hand selection, push/fold, wait selection, formal tenpai, calling decision, safe tile selection)
+- **Game state**: Round (東1局, etc.), seat wind, dora indicator, turn number
+- **Hand tiles**: Exactly 13 tiles
+- **Discards (河)**: Discard piles for self, shimocha (下家), toimen (対面), and kamicha (上家)
+- **Situation**: Additional context as needed
+
+### Answer Format
+
+Answers include:
+- Problem recap
+- Correct discard
+- Detailed analysis of the hand
+- Comparison of multiple candidate discards
+- Quantitative analysis (tile acceptance, etc.)
+- Learning points
+
+## Commands
+
+### Claude Code Custom Commands
+
+```bash
+/create-question  # Generate a new daily problem
+/create-solution  # Generate answer for today's problem
+```
+
+### Python Scripts
+
+```bash
+# Generate problem (auto-numbered)
+python scripts/generate_question.py
+# → creates problems/001/question.md
+
+# Generate problem with specific number
+python scripts/generate_question.py 5
+# → creates problems/005/question.md
+
+# Generate answer for latest problem
+python scripts/generate_solution.py
+# → creates problems/001/solution.md
+
+# Generate answer for specific problem
+python scripts/generate_solution.py 5
+# → creates problems/005/solution.md
+
+# List all problems
+python scripts/list_problems.py
+
+# Filter by theme
+python scripts/list_problems.py --theme "リーチ判断"
+
+# Filter by difficulty
+python scripts/list_problems.py --difficulty 5
+```
+
+Scripts include error handling and automatic retry with exponential backoff for API failures.
+
+### Enabling GitHub Actions (Future)
+
+When ready to enable automation:
+
+1. Obtain Anthropic API key from https://console.anthropic.com/
+2. Add `ANTHROPIC_API_KEY` to GitHub Secrets (Settings > Secrets and variables > Actions)
+3. Create GitHub labels:
+   ```bash
+   gh label create "daily-problem" --color "0E8A16" --description "Daily generated problem"
+   gh label create "daily-answer" --color "1D76DB" --description "Daily generated answer"
+   ```
+4. Move workflow files:
+   ```bash
+   mv .github/workflows-disabled/*.yml .github/workflows/
+   ```
+5. Manually trigger workflows to test:
+   ```bash
+   gh workflow run create-question.yml
+   gh workflow run create-solution.yml
+   ```
+
+## Environment Setup
+
+For local development:
+- `ANTHROPIC_API_KEY` - Claude API key (required for Python scripts)
+
+## File Naming Convention
+
+Problems are organized by sequential numbers in separate directories:
+- Question: `problems/001/question.md`, `problems/002/question.md`, ..., `problems/1000/question.md`, etc.
+- Solution: `problems/001/solution.md`, `problems/002/solution.md`, ..., `problems/1000/solution.md`, etc.
+
+Numbers are zero-padded to at least 3 digits (001-999), but support unlimited digits (1000+).
+
+The date is included in the problem content (markdown heading), not in the file/directory name.
