@@ -237,24 +237,85 @@ def is_valid_complete_hand(tiles: List[str]) -> bool:
 
     return False
 
-def calculate_shanten(tiles: List[str]) -> int:
+def calculate_chiitoitsu_shanten(tiles: List[str]) -> int:
     """
-    手牌の向聴数を計算
+    七対子の向聴数を計算
 
     Args:
-        tiles: 手牌（13枚または14枚）
+        tiles: 手牌（13枚）
 
     Returns:
         向聴数（-1: 和了、0: テンパイ、1: イーシャンテン、...）
     """
-    if len(tiles) == 14:
-        # 14枚の場合は和了形かチェック
-        return -1 if is_valid_complete_hand(tiles) else 0
-
     if len(tiles) != 13:
-        return 99  # 異常値
+        return 99
 
-    # 13枚の場合、すべての牌を加えてテンパイになるかチェック
+    counts = count_tiles(tiles)
+    pairs = 0  # 対子の数
+    unique_tiles = len(counts)  # 異なる牌の種類数
+
+    for tile, count in counts.items():
+        if count >= 2:
+            pairs += 1
+
+    # 七対子は7種類の対子が必要
+    # 向聴数 = 6 - pairs（ただし、同じ牌が3枚以上あると不利）
+    if unique_tiles > 7:
+        # 8種類以上の牌がある場合、最低でも1シャンテン
+        return 6 - pairs
+    else:
+        return 6 - pairs
+
+
+def calculate_kokushi_shanten(tiles: List[str]) -> int:
+    """
+    国士無双の向聴数を計算
+
+    Args:
+        tiles: 手牌（13枚）
+
+    Returns:
+        向聴数（-1: 和了、0: テンパイ、1: イーシャンテン、...）
+    """
+    if len(tiles) != 13:
+        return 99
+
+    # 么九牌（1, 9, 字牌）
+    yaochuuhai = ['1m', '9m', '1p', '9p', '1s', '9s', '1z', '2z', '3z', '4z', '5z', '6z', '7z']
+
+    counts = count_tiles(tiles)
+
+    # 么九牌の種類数をカウント
+    yaochu_types = 0
+    has_pair = False
+
+    for tile in yaochuuhai:
+        if tile in counts:
+            yaochu_types += 1
+            if counts[tile] >= 2:
+                has_pair = True
+
+    # 国士無双の向聴数 = 13 - yaochu_types - (1 if has_pair else 0)
+    if has_pair:
+        return 13 - yaochu_types - 1
+    else:
+        return 13 - yaochu_types
+
+
+def calculate_standard_shanten(tiles: List[str]) -> int:
+    """
+    4面子1雀頭の標準形の向聴数を計算（簡易版）
+
+    Args:
+        tiles: 手牌（13枚）
+
+    Returns:
+        向聴数
+    """
+    if len(tiles) != 13:
+        return 99
+
+    # すべての牌を加えてテンパイになるかチェック
     all_tiles = [
         '1m', '2m', '3m', '4m', '5m', '6m', '7m', '8m', '9m',
         '1p', '2p', '3p', '4p', '5p', '6p', '7p', '8p', '9p',
@@ -272,7 +333,6 @@ def calculate_shanten(tiles: List[str]) -> int:
         return 0  # テンパイ
 
     # イーシャンテン以上の判定（簡易版）
-    # 各牌を加えてテンパイに近づくかチェック
     min_shanten = 99
     for tile in all_tiles:
         test_tiles_13 = tiles + [tile]
@@ -280,16 +340,59 @@ def calculate_shanten(tiles: List[str]) -> int:
         for discard in set(test_tiles_13):
             remaining = test_tiles_13.copy()
             remaining.remove(discard)
-            shanten = calculate_shanten(remaining)
-            if shanten == 0:
-                min_shanten = min(min_shanten, 1)
+            # 再帰を避けるため、テンパイチェックのみ
+            for tile2 in all_tiles:
+                test_tiles_14 = remaining + [tile2]
+                if is_valid_complete_hand(test_tiles_14):
+                    min_shanten = min(min_shanten, 1)
+                    break
+            if min_shanten == 1:
                 break
+        if min_shanten == 1:
+            break
 
     if min_shanten == 1:
         return 1  # イーシャンテン
 
     # さらに遠い向聴数の計算は複雑なので簡略化
     return 2  # リャンシャンテン以上
+
+
+def calculate_shanten(tiles: List[str]) -> Tuple[int, str]:
+    """
+    手牌の向聴数を計算（標準形、七対子、国士無双の最小値を返す）
+
+    Args:
+        tiles: 手牌（13枚または14枚）
+
+    Returns:
+        (向聴数, パターン名)
+        向聴数: -1: 和了、0: テンパイ、1: イーシャンテン、...
+        パターン名: "standard", "chiitoitsu", "kokushi"
+    """
+    if len(tiles) == 14:
+        # 14枚の場合は和了形かチェック
+        if is_valid_complete_hand(tiles):
+            return -1, "standard"
+        return 0, "standard"
+
+    if len(tiles) != 13:
+        return 99, "unknown"
+
+    # 3つのパターンで向聴数を計算
+    standard_shanten = calculate_standard_shanten(tiles)
+    chiitoitsu_shanten = calculate_chiitoitsu_shanten(tiles)
+    kokushi_shanten = calculate_kokushi_shanten(tiles)
+
+    # 最小の向聴数を選択
+    min_shanten = min(standard_shanten, chiitoitsu_shanten, kokushi_shanten)
+
+    if min_shanten == standard_shanten:
+        return min_shanten, "standard"
+    elif min_shanten == chiitoitsu_shanten:
+        return min_shanten, "chiitoitsu"
+    else:
+        return min_shanten, "kokushi"
 
 def validate_problem_content(content: str) -> Tuple[bool, str]:
     """
@@ -313,20 +416,23 @@ def validate_problem_content(content: str) -> Tuple[bool, str]:
         return False, f"手牌が13枚ではありません（{len(hand_tiles)}枚）"
 
     # 向聴数を計算
-    shanten = calculate_shanten(hand_tiles)
+    shanten, pattern = calculate_shanten(hand_tiles)
     shanten_names = {-1: "和了", 0: "テンパイ", 1: "イーシャンテン", 2: "リャンシャンテン"}
+    pattern_names = {"standard": "標準形", "chiitoitsu": "七対子", "kokushi": "国士無双"}
 
     # 問題文から向聴数の記述を探す
     content_lower = content.lower()
     if 'テンパイ' in content or 'tenpai' in content_lower:
         if shanten != 0:
             actual = shanten_names.get(shanten, f"{shanten}シャンテン")
-            return False, f"問題文に「テンパイ」と記載がありますが、実際は{actual}です"
+            pattern_str = pattern_names.get(pattern, pattern)
+            return False, f"問題文に「テンパイ」と記載がありますが、実際は{actual}です（{pattern_str}）"
 
     if 'イーシャンテン' in content or '1シャンテン' in content:
         if shanten != 1:
             actual = shanten_names.get(shanten, f"{shanten}シャンテン")
-            return False, f"問題文に「イーシャンテン」と記載がありますが、実際は{actual}です"
+            pattern_str = pattern_names.get(pattern, pattern)
+            return False, f"問題文に「イーシャンテン」と記載がありますが、実際は{actual}です（{pattern_str}）"
 
     # 「○○を引けば××」のような記述を検証
     # 例：「🀓を引けばテンパイ」
@@ -342,7 +448,7 @@ def validate_problem_content(content: str) -> Tuple[bool, str]:
             continue
 
         test_tiles = hand_tiles + tile_to_add
-        test_shanten = calculate_shanten(test_tiles)
+        test_shanten, test_pattern = calculate_shanten(test_tiles)
 
         expected_shanten = None
         if 'テンパイ' in expected_state:
@@ -355,7 +461,8 @@ def validate_problem_content(content: str) -> Tuple[bool, str]:
         if expected_shanten is not None and test_shanten != expected_shanten:
             actual = shanten_names.get(test_shanten, f"{test_shanten}シャンテン")
             expected = shanten_names.get(expected_shanten, f"{expected_shanten}シャンテン")
-            return False, f"{tile_unicode}を引いても{expected}になりません（実際は{actual}）"
+            test_pattern_str = pattern_names.get(test_pattern, test_pattern)
+            return False, f"{tile_unicode}を引いても{expected}になりません（実際は{actual}、{test_pattern_str}）"
 
     # 河を抽出
     rivers = {}
@@ -422,6 +529,10 @@ def generate_question(date_str: str, max_retries: int = 3) -> str:
 3. 局面情報（場、自風、ドラ表示牌、巡目）を設定
 4. 河（捨て牌）の情報を含める（自分、下家、対面、上家それぞれ2〜5枚程度）
 5. Unicode麻雀牌（🀇-🀏 萬子、🀙-🀡 筒子、🀐-🀘 索子、🀀-🀆 字牌）を使用
+6. **点数状況**: テーマに応じて現在の点数・順位を設定
+   - 押し引き問題の場合は必須（例：「2位、トップと8000点差」）
+   - リーチ判断・手役選択でも点数計算を考慮
+   - 各プレイヤーの点数を明記（例：「自分25000点、下家32000点、対面18000点、上家25000点」）
 
 **重要：手牌の作成手順**（この手順を必ず守ること）:
 1. まず完成形（14枚＝4面子1雀頭）を作成する

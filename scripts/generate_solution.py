@@ -45,9 +45,9 @@ except ImportError:
         return counts
 
     # calculate_shantenは複雑なので省略（必要に応じて実装）
-    def calculate_shanten(tiles: List[str]) -> int:
+    def calculate_shanten(tiles: List[str]) -> Tuple[int, str]:
         """向聴数計算（簡易版）"""
-        return 0  # 仮実装
+        return 0, "standard"  # 仮実装
 
 def validate_solution_content(problem_content: str, solution_content: str) -> Tuple[bool, str]:
     """
@@ -95,11 +95,13 @@ def validate_solution_content(problem_content: str, solution_content: str) -> Tu
     solution_lower = solution_content.lower()
     if 'テンパイ' in solution_content or 'tenpai' in solution_lower:
         try:
-            shanten = calculate_shanten(hand_tiles)
+            shanten, pattern = calculate_shanten(hand_tiles)
             if shanten != 0:
                 shanten_names = {-1: "和了", 0: "テンパイ", 1: "イーシャンテン", 2: "リャンシャンテン"}
+                pattern_names = {"standard": "標準形", "chiitoitsu": "七対子", "kokushi": "国士無双"}
                 actual = shanten_names.get(shanten, f"{shanten}シャンテン")
-                return False, f"解答に「テンパイ」と記載がありますが、実際は{actual}です"
+                pattern_str = pattern_names.get(pattern, pattern)
+                return False, f"解答に「テンパイ」と記載がありますが、実際は{actual}です（{pattern_str}）"
         except:
             pass  # 向聴数計算に失敗した場合はスキップ
 
@@ -167,8 +169,13 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
 
 2. **手牌の向聴数を計算**:
    - 問題文の記述を鵜呑みにせず、実際に手牌（13枚）の向聴数を計算してください
+   - **3つのパターンを検討**:
+     - 標準形（4面子1雀頭）
+     - 七対子（7つの対子）
+     - 国士無双（13種の么九牌）
    - テンパイ（0シャンテン）、イーシャンテン（1シャンテン）、リャンシャンテン（2シャンテン）など
    - 問題文の記述と実際の向聴数が異なる場合は、実際の計算結果を優先してください
+   - 例：標準形ではイーシャンテンだが、七対子ではテンパイというケースもある
 
 3. **見えている牌の集計**:
    - 手牌13枚
@@ -186,6 +193,25 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
 2. その理由を初心者にも分かりやすく解説してください
 3. 可能な候補を複数挙げ、それぞれを比較してください
 4. 受け入れ枚数などの定量的な情報も含めてください
+5. **点数計算と期待値**:
+   - 手牌の役（リーチ、タンヤオ、ピンフなど）を正確に認識
+   - ドラの枚数を数えて翻数を計算
+   - 符計算も行い、何翻何符で何点になるかを明記
+   - **標準形の例**:
+     - 例1：リーチ1翻＋タンヤオ1翻＋ドラ2翻=4翻30符で7700点（ロン）
+     - 例2：リーチ1翻＋ツモ1翻＋ピンフ1翻＋ドラ1翻=4翻20符で2600オール（親ツモ）または1300-2600（子ツモ）
+     - 例3：リーチ1翻＋ツモ1翻＋ピンフ1翻＋ドラ2翻=5翻20符で満貫8000点
+     - 例4：役牌1翻＋ドラ3翻=4翻40符で満貫8000点（刻子で符が上がる）
+   - **七対子の例**:
+     - 例5：七対子2翻＋ドラ2翻=4翻25符で6400点（常に25符固定）
+     - 例6：七対子2翻＋ドラ3翻=5翻25符で満貫8000点
+   - **食い下がり（鳴いた場合）**:
+     - タンヤオ1翻（鳴き可）＋ドラ3翻=4翻30符で7700点
+     - ホンイツ3翻→鳴くと2翻、チンイツ6翻→鳴くと5翻
+     - 三色2翻→鳴くと1翻、一気通貫2翻→鳴くと1翻
+   - 注意：4翻20符は5翻に切り上げられない。4翻のまま計算される
+   - 親/子の違いを考慮（親は1.5倍）
+   - 押し引き問題では期待値と放銃リスクを比較
 
 【確認事項（必ず守ること）】
 - **向聴数の正確性**: 「現在テンパイ」と書くなら、実際に計算してテンパイであることを確認

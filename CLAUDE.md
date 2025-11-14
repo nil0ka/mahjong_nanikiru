@@ -115,14 +115,138 @@ Answers include:
 - Misidentifying tiles (e.g., confusing 🀠 8p with 🀡 9p) can lead to completely incorrect analysis
 - When checking for "genbutsu" (現物 / safe tiles), verify the exact Unicode character against the discard pile
 
+## Scoring and Expected Value Calculations
+
+**Mahjong scoring is critical for push/fold decisions and problem quality**:
+
+1. **Understanding yaku (役) and han (翻)**:
+
+   **1 han yaku**:
+   - Riichi (立直): 1 han (closed only)
+   - Tanyao (断么九): 1 han (some rules allow open, some closed only)
+   - Pinfu (平和): 1 han (closed only) - all sequences, two-sided wait, non-value pair
+   - Ippatsu (一発): 1 han (closed only, must win within 1 turn of riichi)
+   - Tsumo (門前清自摸和): 1 han (closed only)
+   - Yakuhai (役牌): 1 han - honor triplet (ton/nan/sha/pei/haku/hatsu/chun)
+   - Iipeikou (一盃口): 1 han (closed only) - two identical sequences
+   - Rinshan kaihou (嶺上開花): 1 han - winning on kan draw
+   - Chankan (槍槓): 1 han - robbing a kan
+   - Haitei raoyue (海底撈月): 1 han - winning on last draw
+   - Houtei raoyui (河底撈魚): 1 han - winning on last discard
+
+   **2 han yaku**:
+   - Chiitoitsu (七対子): 2 han (closed only, always 25 fu) - seven pairs
+   - Double riichi (ダブル立直): 2 han (closed only) - riichi on first turn
+   - Sanshoku doujun (三色同順): 2 han (1 han if open) - same sequence in all 3 suits
+   - Ikkitsuukan (一気通貫): 2 han (1 han if open) - 123, 456, 789 in same suit
+   - Toitoi (対々和): 2 han - all triplets/quads
+   - Sanankou (三暗刻): 2 han - three closed triplets
+   - Sanshoku doukou (三色同刻): 2 han - same triplet in all 3 suits
+   - Sankantsu (三槓子): 2 han - three quads
+   - Chanta (混全帯么九): 2 han (1 han if open) - all sets contain terminals/honors
+   - Honroutou (混老頭): 2 han - all terminals and honors only
+   - Shousangen (小三元): 2 han - two dragon triplets + one dragon pair
+
+   **3 han yaku**:
+   - Honitsu (混一色): 3 han (2 han if open) - one suit plus honors
+   - Junchan (純全帯么九): 3 han (2 han if open) - all sets contain terminals (no honors)
+   - Ryanpeikou (二盃口): 3 han (closed only) - two pairs of identical sequences (4 sequences total)
+
+   **6 han yaku**:
+   - Chinitsu (清一色): 6 han (5 han if open) - one suit only
+
+   **Yakuman (役満) - 13+ han**:
+   - Kokushi musou (国士無双): Yakuman (closed only) - all 13 types of terminals and honors
+     - Kokushi 13-sided wait (国士無双13面待ち): Double yakuman in some rules
+   - Suuankou (四暗刻): Yakuman (closed only) - four closed triplets
+     - Suuankou tanki (四暗刻単騎): Double yakuman in some rules - waiting on the pair
+   - Daisangen (大三元): Yakuman - all three dragon triplets (haku, hatsu, chun)
+   - Shousuushii (小四喜): Yakuman - three wind triplets + one wind pair
+   - Daisuushii (大四喜): Double yakuman - all four wind triplets
+   - Tsuuiisou (字一色): Yakuman - all honors only
+   - Ryuuiisou (緑一色): Yakuman - all green tiles (2,3,4,6,8 of bamboo + green dragon)
+   - Chinroutou (清老頭): Yakuman - all terminals only (1,9 of each suit)
+   - Chuuren poutou (九蓮宝燈): Yakuman (closed only) - 1112345678999 + any tile of same suit
+     - Junsei chuuren (純正九蓮宝燈): Double yakuman in some rules - 9-sided wait
+   - Suukantsu (四槓子): Yakuman - four quads
+   - Tenhou (天和): Yakuman (dealer only) - winning on dealer's initial 14 tiles
+   - Chiihou (地和): Yakuman (non-dealer only) - winning on first draw before any calls
+   - Renhou (人和): Yakuman in some rules (often just mangan) - winning on another player's first discard
+
+   **Dora**:
+   - Dora (ドラ): 1 han per dora tile
+   - Uradora (裏ドラ): 1 han per uradora (riichi only)
+   - Akadora (赤ドラ): 1 han per red five (if using red fives)
+
+   **Kuisagari (食い下がり) - Han reduction when open**:
+   - **Lose 1 han when opened**: Sanshoku doujun (2→1), Ikkitsuukan (2→1), Chanta (2→1), Honitsu (3→2), Junchan (3→2), Chinitsu (6→5)
+   - **Tanyao**: Some rules allow open (1 han), some require closed only
+   - **CANNOT be made with open hand**: Riichi, Pinfu, Tsumo, Iipeikou, Ryanpeikou, Chiitoitsu, all Yakuman except those that allow open sets
+
+   **Common combinations**:
+     - Riichi (1) + Tanyao (1) + Dora (2) = 4 han 30 fu = 7700 points ron
+     - Riichi (1) + Tsumo (1) + Pinfu (1) + Dora (1) = 4 han 20 fu = 2600 all (dealer tsumo) or 1300-2600 (child tsumo)
+     - Chiitoitsu (2) + Dora (2) = 4 han 25 fu = 6400 points (always 25 fu)
+     - Note: 4 han 20 fu does NOT round to 5 han; it stays at 4 han 20 fu
+     - 5 han (any fu): Mangan 8000 points
+
+2. **Point calculations** (子 child / 親 dealer):
+   - **1 han 30 fu**: 1000 ron / 300-500 tsumo (dealer: 1500 / 500 all)
+   - **2 han 25 fu** (chiitoitsu only): 1600 ron / 400-800 tsumo (dealer: 2400 / 800 all)
+   - **2 han 30 fu**: 2000 ron / 500-1000 tsumo (dealer: 2900 / 1000 all)
+   - **3 han 25 fu** (chiitoitsu): 3200 ron / 800-1600 tsumo (dealer: 4800 / 1600 all)
+   - **3 han 30 fu**: 3900 ron / 1000-2000 tsumo (dealer: 5800 / 2000 all)
+   - **3 han 60 fu**: 5800 ron / 1500-2900 tsumo (dealer: 8700 / 2900 all)
+   - **4 han 20 fu** (pinfu tsumo only): N/A ron / 1300-2600 tsumo (dealer: 2600 all)
+   - **4 han 25 fu** (chiitoitsu): 6400 ron / 1600-3200 tsumo (dealer: 9600 / 3200 all)
+   - **4 han 30 fu**: 7700 ron / 2000-3900 tsumo (dealer: 11600 / 3900 all)
+   - **4 han 40+ fu or 5 han**: 8000 ron / 2000-4000 tsumo (dealer: 12000 / 4000 all) = **Mangan (満貫)**
+   - **6-7 han**: 12000 ron / 3000-6000 tsumo (dealer: 18000 / 6000 all) = **Haneman (跳満)**
+   - **8-10 han**: 16000 ron / 4000-8000 tsumo (dealer: 24000 / 8000 all) = **Baiman (倍満)**
+   - **11-12 han**: 24000 ron / 6000-12000 tsumo (dealer: 36000 / 12000 all) = **Sanbaiman (三倍満)**
+   - **13+ han / Yakuman**: 32000 ron / 8000-16000 tsumo (dealer: 48000 / 16000 all) = **Yakuman (役満)**
+
+   **Important fu calculations**:
+   - **Pinfu tsumo: 20 fu** (only case where 20 fu exists; cannot ron with pinfu)
+   - **Standard ron (no pinfu): 30 fu base**
+   - **With terminal/honor pon**: +8 fu per closed pon of terminals/honors
+   - **With kan**: +16 fu (closed), +8 fu (open)
+   - **Closed wait (kanchan, penchan, tanki)**: +2 fu
+   - **Common fu patterns**:
+     - Pinfu tsumo: 20 fu
+     - Open tanyao/honitsu with simple pons: 30 fu
+     - Closed hand with terminal/honor pon: 40-50 fu
+   - **4 han depends heavily on fu**: 20 fu = 2600 all / 1300-2600, 30 fu = 7700, 40+ fu = 8000 (mangan)
+   - **5+ han**: Always mangan or above regardless of fu
+
+3. **Push/fold (押し引き) decisions require**:
+   - Current ranking and point differences
+   - Expected value of your hand (probability × points)
+   - Risk of dealing in (放銃リスク): potential loss if opponent wins
+   - Turn number and tiles remaining
+   - Opponent's riichi timing and visible tiles
+   - Example: "You're in 2nd place, 8000 points behind. Opponent riichi. Your hand is 2-shanten, 3000 point potential. → Fold and preserve 2nd place"
+
+4. **When generating problems with scoring themes**:
+   - Clearly state current scores and ranking
+   - Calculate the exact han/fu and point value of the hand
+   - Consider all possible yaku combinations
+   - Factor in dora tiles for accurate calculations
+   - For push/fold: State opponents' visible strength and point positions
+
 ## Critical: Shanten Calculation and Problem Accuracy
 
 **The most important aspect of problem generation is correctly understanding and representing the hand state**:
 
-1. **Calculate shanten accurately**:
+1. **Calculate shanten accurately for all winning patterns**:
+   - **4 mentsu + 1 jantou (standard)**: Most common pattern
+   - **Chiitoitsu (七対子)**: Seven pairs - calculate separately
+   - **Kokushi musou (国士無双)**: 13 orphans (1/9/honors) - calculate separately
+   - **Take the minimum shanten** among all three patterns
    - Determine if the hand is tenpai (0-shanten), iishanten (1-shanten), ryanshanten (2-shanten), etc.
    - Any shanten level is valid for problems - not just tenpai or iishanten
    - Example valid problems: "How to proceed from ryanshanten?", "Which tile to discard in this iishanten position?"
+   - **Important**: A hand might be iishanten for standard but tenpai for chiitoitsu - always check all patterns
 
 2. **Verify problem statements match reality**:
    - If you state "現在テンパイ" (currently tenpai), the 13-tile hand must actually be tenpai
