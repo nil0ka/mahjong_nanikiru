@@ -64,6 +64,57 @@ Answers include:
 - Quantitative analysis (tile acceptance, etc.)
 - Learning points
 
+### Unicode Mahjong Tiles Reference
+
+**CRITICAL**: Always refer to this table when reading or writing mahjong tiles to ensure correct tile identification.
+
+**萬子 (Manzu / Characters)**:
+- 🀇 = 1m (一萬)
+- 🀈 = 2m (二萬)
+- 🀉 = 3m (三萬)
+- 🀊 = 4m (四萬)
+- 🀋 = 5m (五萬)
+- 🀌 = 6m (六萬)
+- 🀍 = 7m (七萬)
+- 🀎 = 8m (八萬)
+- 🀏 = 9m (九萬)
+
+**筒子 (Pinzu / Dots)**:
+- 🀙 = 1p (一筒)
+- 🀚 = 2p (二筒)
+- 🀛 = 3p (三筒)
+- 🀜 = 4p (四筒)
+- 🀝 = 5p (五筒)
+- 🀞 = 6p (六筒)
+- 🀟 = 7p (七筒)
+- 🀠 = 8p (八筒)
+- 🀡 = 9p (九筒)
+
+**索子 (Souzu / Bamboo)**:
+- 🀐 = 1s (一索)
+- 🀑 = 2s (二索)
+- 🀒 = 3s (三索)
+- 🀓 = 4s (四索)
+- 🀔 = 5s (五索)
+- 🀕 = 6s (六索)
+- 🀖 = 7s (七索)
+- 🀗 = 8s (八索)
+- 🀘 = 9s (九索)
+
+**字牌 (Jihai / Honor tiles)**:
+- 🀀 = 東 (East)
+- 🀁 = 南 (South)
+- 🀂 = 西 (West)
+- 🀃 = 北 (North)
+- 🀆 = 白 (White dragon)
+- 🀅 = 發 (Green dragon)
+- 🀄 = 中 (Red dragon)
+
+**Important Notes**:
+- When analyzing hands, discards, or generating problems/solutions, always verify tile identification using this reference
+- Misidentifying tiles (e.g., confusing 🀠 8p with 🀡 9p) can lead to completely incorrect analysis
+- When checking for "genbutsu" (現物 / safe tiles), verify the exact Unicode character against the discard pile
+
 ## Commands
 
 ### Claude Code Custom Commands
