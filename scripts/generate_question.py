@@ -500,6 +500,46 @@ def validate_problem_content(content: str) -> Tuple[bool, str]:
             if abs(len(river) - expected_count) > 2:
                 return False, f"{player}の河の枚数が巡目と整合していません（{turn}巡目で{len(river)}枚）"
 
+    # 点数配分の妥当性チェック
+    point_pattern = r'(\d+)点'
+    point_matches = re.findall(point_pattern, content)
+    if len(point_matches) >= 4:
+        try:
+            points = [int(p) for p in point_matches[:4]]
+            total_points = sum(points)
+
+            # 合計点数チェック
+            if total_points != 100000:
+                return False, f"点数の合計が100000点ではありません（{total_points}点）"
+
+            # 場を抽出
+            round_match = re.search(r'場:\s*(東|南)(\d+)局(\d+)本場', content)
+            if round_match:
+                wind = round_match.group(1)
+                round_num = int(round_match.group(2))
+                honba = int(round_match.group(3))
+
+                # 東1局0本場チェック
+                if wind == '東' and round_num == 1 and honba == 0:
+                    if not all(p == 25000 for p in points):
+                        return False, f"東1局0本場では全員25000点であるべきです（実際: {points}）"
+
+                # 東1局1本場チェック
+                if wind == '東' and round_num == 1 and honba == 1:
+                    # 親（東家）の点数を確認
+                    # 自風を抽出して親を特定
+                    self_wind_match = re.search(r'自風:\s*(東|南|西|北)', content)
+                    if self_wind_match:
+                        self_wind = self_wind_match.group(1)
+                        wind_to_index = {'東': 0, '南': 1, '西': 2, '北': 3}
+
+                        # プレイヤー名から点数を特定（自分、下家、対面、上家）
+                        # 簡易チェック：親が大幅に点数を減らしていないか
+                        if min(points) < 18000:  # 親が大幅に減っているケース
+                            return False, f"東1局1本場で点数が大幅に減少しているプレイヤーがいます（{min(points)}点）。1本場は親が和了or親テンパイ流局の場合のみ発生します。"
+        except (ValueError, IndexError):
+            pass  # 点数の抽出に失敗した場合はスキップ
+
     return True, ""
 
 def generate_question(date_str: str, max_retries: int = 3) -> str:
@@ -541,12 +581,36 @@ def generate_question(date_str: str, max_retries: int = 3) -> str:
 3. 問題のテーマに応じて1枚抜いて13枚にする
    - テンパイ問題なら：待ち牌を1枚抜く（例：🀖を抜いて🀖待ちのテンパイ）
    - イーシャンテン問題なら：面子の一部を崩す
-4. 最終確認：作成した13枚の手牌が問題として成立するか確認
+4. **Unicode牌の識別を必ず確認**:
+   - 🀗は8s（七索ではない）、🀖は7s
+   - 🀠は8p（九筒ではない）、🀡は9p
+   - 🀎は8m（九萬ではない）、🀏は9m
+5. **向聴数を厳密に検証**:
+   - 13枚の手牌の向聴数を計算
+   - **有効牌を全てリストアップし、それぞれでどうなるかテスト**:
+     - 例：「4pを引けばテンパイ」と書く場合
+       1. 13枚に4pを加えて14枚にする
+       2. 14枚の状態で1枚切ってテンパイになるか確認
+       3. 他の牌（2p, 5p, 8pなど）でも同様にテストする
+     - **重要**: 4種類以上の牌でテンパイに近づける手は、押し引き問題として不適切
+6. **問題テーマと手牌の適合性確認**:
+   - **押し引き問題**: イーシャンテン（有効牌2-3種類のみ）またはリャンシャンテン以上、役は1-2翻
+   - **リーチ判断問題**: テンパイ
+   - **手作り・手役選択問題**: イーシャンテン〜リャンシャンテン
+7. 最終確認：作成した13枚の手牌が問題として成立するか確認
 
 確認事項（必ず守ること）:
 - **手牌の妥当性**: 上記の手順で作成し、完成形から逆算して構成すること
 - **牌の枚数制限**: 各牌は4枚までしか存在しない。手牌+全プレイヤーの河+ドラ表示牌+鳴き牌で同じ牌が5枚以上にならないこと
 - **河の枚数**: 鳴きなしの場合、各プレイヤーの河の枚数は（巡目 - 1）枚が基本。例：11巡目なら各プレイヤーの河は基本10枚
+- **点数配分の妥当性**:
+  - 4人の合計点数が100000点であること
+  - **東1局0本場**: 全員が必ず25000点（ゲーム開始直後、点数変動なし）
+  - **東1局1本場**: 親（東家）が和了または親テンパイ流局の場合のみ発生
+    - 親和了の場合：親の点数が25000点より増えているはず
+    - 親テンパイ流局の場合：点数移動は小さい（±1000-3000点程度）
+    - **注意**: 親の点数が大幅に減っている（例：16000点）のは不自然
+  - **東2局以降・南場**: 大きな点数変動が自然（複数局が進行しているため）
 
 以下のMarkdown形式で出力してください。他の説明は不要です。
 

@@ -105,6 +105,38 @@ def validate_solution_content(problem_content: str, solution_content: str) -> Tu
         except:
             pass  # 向聴数計算に失敗した場合はスキップ
 
+    # 点数配分の妥当性チェック（問題文から）
+    point_pattern = r'(\d+)点'
+    point_matches = re.findall(point_pattern, problem_content)
+    if len(point_matches) >= 4:
+        try:
+            points = [int(p) for p in point_matches[:4]]
+            total_points = sum(points)
+
+            # 合計点数チェック
+            if total_points != 100000:
+                # 警告レベル（エラーとはしない）
+                print(f"Warning: 点数の合計が100000点ではありません（{total_points}点）")
+
+            # 場を抽出
+            round_match = re.search(r'場:\s*(東|南)(\d+)局(\d+)本場', problem_content)
+            if round_match:
+                wind = round_match.group(1)
+                round_num = int(round_match.group(2))
+                honba = int(round_match.group(3))
+
+                # 東1局0本場チェック
+                if wind == '東' and round_num == 1 and honba == 0:
+                    if not all(p == 25000 for p in points):
+                        print(f"Warning: 東1局0本場では全員25000点であるべきです（実際: {points}）")
+
+                # 東1局1本場チェック
+                if wind == '東' and round_num == 1 and honba == 1:
+                    if min(points) < 18000:
+                        print(f"Warning: 東1局1本場で点数が大幅に減少しているプレイヤーがいます（{min(points)}点）")
+        except (ValueError, IndexError):
+            pass  # 点数の抽出に失敗した場合はスキップ
+
     return True, ""
 
 def get_latest_problem_number() -> int:
@@ -164,8 +196,11 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
 
 【重要な分析手順】
 1. **Unicode牌の正確な識別**:
-   - CLAUDE.mdのUnicode麻雀牌参照表を使って牌を正確に識別してください
-   - 特に🀠（8p）と🀡（9p）、🀎（8m）と🀏（9m）などを混同しないこと
+   - **必ず以下の参照表を使って全ての牌を識別してください**:
+     - 🀗は8s（七索ではない）、🀖は7s
+     - 🀠は8p（九筒ではない）、🀡は9p
+     - 🀎は8m（九萬ではない）、🀏は9m
+   - 手牌13枚を1枚ずつ参照表で確認すること
 
 2. **手牌の向聴数を計算**:
    - 問題文の記述を鵜呑みにせず、実際に手牌（13枚）の向聴数を計算してください
@@ -173,8 +208,14 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
      - 標準形（4面子1雀頭）
      - 七対子（7つの対子）
      - 国士無双（13種の么九牌）
-   - テンパイ（0シャンテン）、イーシャンテン（1シャンテン）、リャンシャンテン（2シャンテン）など
+   - **有効牌を全てリストアップし、それぞれでどうなるかテスト**:
+     - 例：問題文が「4pを引けばテンパイ」と書いている場合
+       1. 実際に4pを加えて14枚にする
+       2. 14枚の状態で1枚切ってテンパイになるか確認
+       3. 他の牌（2p, 5p, 8pなど）でも同様にテストする
+     - 問題文に書かれていない有効牌も発見して解説に含める
    - 問題文の記述と実際の向聴数が異なる場合は、実際の計算結果を優先してください
+   - 問題文に向聴数の誤りがある場合、解説中で指摘すること
    - 例：標準形ではイーシャンテンだが、七対子ではテンパイというケースもある
 
 3. **見えている牌の集計**:
@@ -187,6 +228,18 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
 4. **推奨打牌の妥当性確認**:
    - 推奨する打牌が実際に手牌に含まれていることを確認
    - 手牌にない牌を「切るべき」と書かないこと
+
+5. **点数配分の妥当性確認**:
+   - 4人の点数合計が100000点になっているか確認
+   - **東1局0本場**の場合：全員が25000点であることを確認
+     - 点数に変動があれば問題設定の誤りを解説中で指摘
+   - **東1局1本場**の場合：親の点数変動が妥当か確認
+     - 親和了 → 親の点数が増えているはず（25000点以上）
+     - 親テンパイ流局 → 点数変動は小さい（±1000-3000点程度）
+     - 親の点数が大幅減少（例：16000点）は不自然 → 問題設定の誤りを解説中で指摘
+   - 問題文の局・本場設定と点数配分が矛盾している場合：
+     - 解説中でその矛盾を指摘する
+     - ただし、解答自体は問題文の設定を前提として書く
 
 【要件】
 1. 問題を詳細に分析し、最適な打牌を決定してください

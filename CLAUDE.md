@@ -262,26 +262,101 @@ Answers include:
    - Calculate actual shanten of the resulting 13-tile hand
    - Describe the hand state accurately in the problem text
 
-4. **Validation checks** (automated in `scripts/generate_question.py`):
+4. **Critical: Verify shanten calculation thoroughly**:
+   - **ALWAYS use the Unicode tile reference table** to correctly identify each tile
+   - **Calculate shanten for the base 13-tile hand** (before any draws)
+   - **Test EVERY useful tile** to see what happens when drawn:
+     - Example: If you claim "drawing 4p makes it tenpai", actually add 4p to the hand and verify it becomes 14 tiles with only 1 tile away from winning
+     - Check if drawing other tiles also leads to tenpai - if too many tiles lead to quick tenpai, the hand is not appropriate for push/fold problems
+   - **For each useful tile, verify the resulting hand state**:
+     - Does it become tenpai? (can discard 1 tile to reach 0-shanten)
+     - Does it stay iishanten? (still 1-shanten)
+     - What tiles can be discarded after the draw?
+   - **Example verification for problem 001 initial error**:
+     - Base hand: 🀈🀉🀊🀙🀙🀛🀝🀔🀕🀖🀅🀅🀅 (13 tiles)
+     - Drawing 🀜(4p): 🀈🀉🀊🀙🀙🀛🀜🀝🀔🀕🀖🀅🀅🀅 (14 tiles)
+     - Analysis: 234m + 11p + 345p + 456s + hatsu-hatsu-hatsu = 5 groups complete! Can discard 1p to win immediately
+     - **This is tenpai, NOT iishanten**! The problem statement was wrong.
+
+5. **Match hand state to problem theme**:
+   - **Push/fold problems** require hands that are far from tenpai:
+     - Iishanten with limited useful tiles (2-3 types max)
+     - Ryanshanten or further
+     - Low point potential (1-2 han only)
+     - If drawing ANY of 4+ different tile types leads to immediate or very quick tenpai, the hand is TOO GOOD for push/fold
+   - **Riichi decision problems** require tenpai hands
+   - **Hand development problems** can be iishanten or ryanshanten
+   - **Wait selection problems** require tenpai or near-tenpai hands
+
+6. **Validation checks** (automated in `scripts/generate_question.py`):
    - Hand tile count = exactly 13
    - Each tile type ≤ 4 (across hand + all rivers + dora indicator)
    - River counts match turn number (allowing ±2 for calls)
    - **Shanten calculation matches problem description**
    - **Tile addition claims are verified** (e.g., "drawing X gives tenpai")
+   - **Problem theme matches hand state** (e.g., push/fold problems don't use hands that easily reach tenpai)
+
+## Point Distribution Validation
+
+**Point distributions must be realistic based on the round and honba (本場) count**:
+
+1. **Starting points (配給原点)**:
+   - Standard: 25000 points × 4 players = 100000 points total
+   - **Always verify**: Sum of all four players' points = 100000 (or match your ruleset)
+
+2. **東1局0本場 (East 1, Round 0)**:
+   - **Expected**: All players must have exactly 25000 points (starting points)
+   - **Why**: This is the very first hand of the game - no wins or draws have occurred yet
+   - **No exceptions**: Point deviations are not possible in East 1-0
+
+3. **東1局1本場 (East 1, Round 1)**:
+   - **Only possible if**:
+     - Dealer (東家) won the previous hand (East 1-0) → Dealer's points should have INCREASED
+     - OR: Dealer was tenpai during ryuukyoku (流局) → Small point transfers (±1000-3000)
+   - **NOT possible if**: Dealer's points decreased significantly (e.g., from 25000 to 16000)
+   - **Why**: 1本場 means dealer retained their seat, which only happens on dealer win or dealer tenpai
+
+4. **東2局以降 or 南場 (East 2+ or South round)**:
+   - **Expected**: Larger point deviations are natural (multiple hands have been played)
+   - **Verify**: Point distribution should reflect plausible game progression
+   - Example: 東3局1本場 with points like (32000, 28000, 24000, 16000) is reasonable
+
+5. **Validation rules for problem generation**:
+   - ✅ **Always check**: Does the 本場 count match the point distribution story?
+   - ✅ **Always check**: If using 1本場+, can you explain how the dealer retained their seat?
+   - ✅ **Always check**: Sum of points = 100000 (standard ruleset)
+   - ✅ **Red flag**: 東1局1本場 with dealer having fewer points than starting (25000)
+   - ✅ **Red flag**: Large point swings (>10000 points) in early rounds (東1局-東2局)
+
+6. **Recommended approach**:
+   - For simple problems: Use **東1局0本場** with starting points (25000 × 4)
+   - For problems needing point pressure: Use **東3局+, 南場, or オーラス** with realistic point distributions
+   - If using 1本場+: Write a brief explanation of how dealer retained their seat (e.g., "前局は親の2000点和了" or "前局は親テンパイ流局")
 
 ## Solution Generation: Critical Validation Points
 
 **When generating solutions, always verify these points**:
 
 1. **Accurate tile identification**:
-   - Use the Unicode tile reference table above to correctly identify tiles
-   - Do NOT confuse similar-looking tiles (🀠 8p vs 🀡 9p, 🀎 8m vs 🀏 9m)
-   - Verify you're reading the 13-tile hand correctly from the problem
+   - **ALWAYS use the Unicode tile reference table above** to correctly identify every single tile
+   - Do NOT confuse similar-looking tiles:
+     - 🀗 = 8s (NOT 7s), 🀖 = 7s
+     - 🀠 = 8p (NOT 9p), 🀡 = 9p
+     - 🀎 = 8m (NOT 9m), 🀏 = 9m
+   - Verify you're reading the 13-tile hand correctly from the problem (check each tile one by one using the reference table)
 
 2. **Independent shanten calculation**:
    - Do NOT trust the problem description blindly (Problem 001 had errors!)
+   - **ALWAYS use the Unicode tile reference table** to correctly identify each tile first
    - Calculate the actual shanten of the 13-tile hand yourself
+   - **Test ALL useful tiles** to verify what happens when drawn:
+     - Example: Problem says "drawing 4p makes it tenpai"
+       1. Add 4p to the 13-tile hand to make 14 tiles
+       2. Check if you can discard 1 tile to reach tenpai
+       3. Test other tiles (2p, 5p, 8p, etc.) as well
+     - Include ALL useful tiles in your solution, not just the ones mentioned in the problem
    - If the problem says "tenpai" but it's actually iishanten, use the correct calculation
+   - If the problem has shanten errors, point them out in your solution
    - Describe the actual state in your solution
 
 3. **Accurate tile counting**:
@@ -294,10 +369,21 @@ Answers include:
    - The tile you recommend discarding MUST be in the actual 13-tile hand
    - Do NOT recommend discarding a tile that doesn't exist in the hand
 
-5. **Validation checks** (automated in `scripts/generate_solution.py`):
+5. **Validate point distribution consistency**:
+   - Check that the sum of all four players' points equals 100000
+   - **東1局0本場**: All players must have exactly 25000 points
+     - If point distribution differs, the problem has an error - note this in your solution
+   - **東1局1本場**: Dealer's points should reflect dealer win or dealer tenpai draw
+     - Dealer win: Dealer's points should be > 25000
+     - Dealer tenpai draw: Small point transfers (±1000-3000)
+     - If dealer has significantly fewer points (e.g., 16000), the problem setup is inconsistent - note this in your solution
+   - When you find inconsistencies, point them out in your solution explanation, but still answer the problem based on the given scenario
+
+6. **Validation checks** (automated in `scripts/generate_solution.py`):
    - Recommended discard is in the hand
    - Shanten claims match actual calculation
    - Tile counts are accurate
+   - Point distribution is consistent with round/honba
 
 ## Commands
 
