@@ -227,6 +227,54 @@ Answers include:
    - Opponent's riichi timing and visible tiles
    - Example: "You're in 2nd place, 8000 points behind. Opponent riichi. Your hand is 2-shanten, 3000 point potential. → Fold and preserve 2nd place"
 
+   **Critical: Analysis methodology for push/fold problems**:
+
+   a. **Analyze YOUR hand's potential (期待値分析)**:
+   - Current shanten level and number of useful tiles
+   - **List all possible ideal forms (理想形) with yaku and point values**:
+     - Minimum: Basic yaku only (e.g., "Hatsu only: 1 han = 1000-2000 points")
+     - With riichi: Riichi + base yaku (e.g., "Riichi(1) + Hatsu(1) = 2 han = 2000-3900 points")
+     - With dora: Include dora scenarios (e.g., "Riichi(1) + Hatsu(1) + Dora(1) = 3 han = 3900-5800 points")
+     - Maximum realistic: Best case scenario (e.g., "Riichi(1) + Tsumo(1) + Hatsu(1) + Dora(2) = 5 han = 8000 points (mangan)")
+   - **Realistic evaluation**: Likelihood of reaching tenpai and winning, considering turn number and useful tiles
+   - **AVOID speculative probability percentages** (e.g., "5-10% chance") unless you can provide clear calculation basis
+   - **Use qualitative assessments** instead: "extremely low", "low", "moderate", "high"
+
+   b. **Analyze OPPONENT's hand from river (河の読み)**:
+   - **Dora visibility**: If dora is not visible in rivers, opponent likely has 1+ dora
+   - **Yakuhai visibility**: Check which honor tiles (役牌) are visible/missing
+   - **Suit distribution**: Check if染め手 (honitsu/chinitsu) is possible based on discards
+   - **Kan dora**: Check if additional kan dora indicators exist
+   - **Riichi timing**: Early riichi (≤8 turns) suggests good wait, late riichi (12+ turns) might be bad wait
+
+   **List possible opponent hand patterns with point estimates**:
+   - Pattern 1: Riichi only = 1000-2000 points (note: "possibility is low" if dora not visible)
+   - Pattern 2: Riichi + Tsumo = 2 han = 2000-3900 points
+   - Pattern 3: Riichi + Dora(1) = 2 han = 2000-3900 points
+   - Pattern 4: Riichi + Yakuhai = 2 han = 2000-3900 points
+   - Pattern 5: Riichi + Dora(1) + Tsumo(1) = 3 han = 3900-5800 points
+   - Pattern 6: Riichi + Dora(2+) = 3+ han = 3900-8000+ points
+   - Pattern 7: Riichi + Pinfu + Dora + Tsumo = 4 han = 8000 points (mangan)
+   - (Add more patterns as relevant)
+
+   **Conclusion on opponent's likely point range**: Based on river analysis, state which range is most likely
+   - Example: "Since dora is not visible, 3 han (3900-5800 points) or higher is likely. Minimum 2 han 2000 points, worst case mangan 8000 points."
+   - **AVOID speculative percentages** for deal-in probability unless clearly calculable
+   - **Use realistic point range estimates** based on river analysis: "Deal-in loss: 2000-8000 points scale (realistically 3000-6000 points)"
+
+   c. **Compare risk vs reward**:
+   - Your winning expectation (very low / low / moderate / high) × your point range
+   - Opponent's deal-in risk × opponent's likely point range
+   - Ranking impact: Will winning change your rank? Will dealing in drop your rank?
+   - **Use qualitative comparison**: "Winning expectation (extremely low, even if winning only 1000-2000 points) << Deal-in loss (3000-6000 points scale)"
+
+   d. **Important notes**:
+   - **DO NOT use fabricated probability percentages** (e.g., "35% deal-in rate", "5-10% winning rate") without clear basis
+   - **DO use river information** to estimate opponent's hand strength (dora visibility, yakuhai, suit distribution)
+   - **DO list ideal forms** of your hand with specific yaku combinations and point values
+   - **DO use qualitative terms** for likelihood: "extremely low", "low", "moderate", "high", "very high"
+   - **DO provide point ranges** based on yaku analysis, not single-point guesses
+
 4. **When generating problems with scoring themes**:
    - Clearly state current scores and ranking
    - Calculate the exact han/fu and point value of the hand
@@ -430,6 +478,54 @@ Answers include:
    - Shanten claims match actual calculation
    - Tile counts are accurate
    - Point distribution is consistent with round/honba
+
+8. **Candidate discard ordering and presentation**:
+   - **ALWAYS order candidates from best to worst** (lowest risk to highest risk)
+   - Candidate 1 should be the BEST option (recommended choice)
+   - Candidate 2 should be the second-best option
+   - Candidate 3 should be the worst option among the candidates discussed
+   - **Why this matters**: Readers naturally expect candidates to be presented in order of quality
+   - **Example ordering** (push/fold problem):
+     - Candidate 1: Discard genbutsu tile (safest, fold) ← BEST
+     - Candidate 2: Discard terminal tile 9m (medium risk, attack) ← Second-best
+     - Candidate 3: Discard 1p early tile (highest risk, attack) ← WORST
+   - **Clearly label the worst candidate**: Add clarifying text like "最も危険" (most dangerous) or "3つの候補の中で最悪" (worst among the three candidates)
+   - **Avoid confusing ordering**: Do NOT put the worst option as Candidate 2 and second-worst as Candidate 3
+
+9. **Expected value calculation and push/fold analysis** (for push/fold theme problems):
+
+   **For YOUR hand**:
+   - **DO list all ideal forms** with specific yaku and point values:
+     - Example: "Minimum: Hatsu only (1 han) = 1000-2000 points"
+     - Example: "With riichi: Riichi(1) + Hatsu(1) = 2 han = 2000-3900 points"
+     - Example: "With dora: Riichi(1) + Hatsu(1) + Dora(1) = 3 han = 3900-5800 points"
+     - Example: "Maximum: Riichi(1) + Tsumo(1) + Hatsu(1) + Dora(2) = 5 han = 8000 points (mangan)"
+   - **DO use qualitative likelihood assessment**: "extremely low", "low", "moderate", "high"
+   - **DO NOT use fabricated probability percentages** like "5-10% winning rate", "35% deal-in rate" without clear calculation basis
+
+   **For OPPONENT's hand** (especially riichi declarers):
+   - **DO analyze river information systematically**:
+     - Dora visibility: "Dora 2s (🀑) is not visible → opponent likely has 1+ dora"
+     - Yakuhai visibility: "東南中 discarded, but 白發北 not visible → yakuhai possibility"
+     - Suit distribution: "萬筒索 mixed → not honitsu/chinitsu"
+     - Riichi timing: "8th turn riichi → likely good wait"
+   - **DO list possible hand patterns with point ranges**:
+     - Pattern 1: Riichi only = 1000-2000 points (note: "low possibility if dora not visible")
+     - Pattern 2: Riichi + Tsumo = 2 han = 2000-3900 points
+     - Pattern 3: Riichi + Dora(1) = 2 han = 2000-3900 points
+     - Pattern 4: Riichi + Yakuhai = 2 han = 2000-3900 points
+     - Pattern 5: Riichi + Dora(1) + Tsumo(1) = 3 han = 3900-5800 points
+     - Pattern 6: Riichi + Dora(2+) = 3+ han = 3900-8000+ points
+     - Pattern 7: Riichi + Pinfu + Dora + Tsumo = 4 han = 8000 points (mangan)
+   - **DO provide conclusion on likely point range**:
+     - Example: "Since dora is not visible, 3 han (3900-5800 points) or higher is likely. Minimum 2 han 2000 points, worst case mangan 8000 points."
+     - Example: "Deal-in loss: 2000-8000 points scale (realistically 3000-6000 points)"
+   - **DO NOT use single-point guesses** like "4000 points × 35% = 1400 points expected loss"
+
+   **For final comparison**:
+   - **DO use qualitative comparison**:
+     - Example: "Winning expectation (extremely low, even if winning only 1000-2000 points) << Deal-in loss (3000-6000 points scale)"
+   - **DO NOT fabricate numeric expected values** without clear basis
 
 ## Commands
 
