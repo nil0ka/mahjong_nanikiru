@@ -48,6 +48,26 @@ Once Anthropic API key is obtained:
 
 Problems use Unicode Mahjong tiles (🀇-🀏 萬子、🀙-🀡 筒子、🀐-🀘 索子、🀀-🀆 字牌) and include:
 - **Difficulty level**: 10-point scale (★☆☆☆☆☆☆☆☆☆ 1/10 to ★★★★★★★★★★ 10/10)
+  - **Difficulty criteria**:
+    - **1-2 (Very Easy)**: Single obvious correct answer, no calculation needed, basic concepts only
+      - Example: Discard an isolated honor tile with no yaku value
+    - **3-4 (Easy)**: Correct answer is clear with basic analysis, 1-2 viable candidates
+      - Example: Push/fold with genbutsu available and obvious danger tiles
+      - Example: Simple tenpai decision with clear yaku and good wait
+    - **5-6 (Medium)**: Requires analysis of multiple factors, 2-3 reasonable candidates
+      - Example: Push/fold requiring river reading and opponent hand estimation
+      - Example: Wait selection between different yaku patterns
+    - **7-8 (Hard)**: Complex analysis required, multiple viable candidates with trade-offs
+      - Example: Push/fold with no genbutsu, requiring deep probability analysis
+      - Example: Hand development with multiple valid paths (honitsu vs tanyao vs speed)
+    - **9-10 (Very Hard)**: Expert-level analysis, subtle differences between candidates
+      - Example: Optimal tile efficiency in complex iishanten position
+      - Example: Push/fold in oorasu with intricate ranking calculations
+  - **Key difficulty factors**:
+    - **Clarity of correct answer**: How obvious is the best choice?
+    - **Number of viable candidates**: More candidates = higher difficulty
+    - **Analysis depth required**: Simple counting vs complex probability/ranking analysis
+    - **Trade-offs between candidates**: Subtle differences = higher difficulty
 - **Theme**: Problem category (e.g., Riichi decision, hand selection, push/fold, wait selection, formal tenpai, calling decision, safe tile selection)
 - **Game state**: Round (東1局, etc.), seat wind, dora indicator, turn number
 - **Hand tiles**: Exactly 14 tiles (13 tiles in hand + 1 drawn tile)
@@ -321,45 +341,86 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
 
    Push/fold problems should not be presented as a simple "attack/fold" binary choice. There are **three strategic options**:
 
-   **1. Complete fold (ベタ降り)**:
-   - Discard only genbutsu (absolute safe tiles) to aim for ryuukyoku
-   - Risk: 0%, Return: Completely abandon winning possibility
-   - When to use: Oorasu with large point gap, extremely distant hand, critical ranking situation
+   **IMPORTANT: Waiting strategy (様子見) is the DEFAULT strategy in most situations. Complete fold and full attack are only for extreme cases.**
 
-   **2. Waiting strategy (様子見) - CRITICAL for realistic play**:
+   **1. Waiting strategy (様子見) - DEFAULT strategy for most situations**:
    - **Discard relatively safe tiles while keeping hand progression possible**
    - Risk: Low-Medium, Return: Keep option to attack if hand improves
-   - When to use: Dealer in 1st place, small point gap, iishanten with useful tiles
+   - **This is NOT the same as complete fold** - you still have the possibility to win
+   - **Key characteristic**: Flexibility to change strategy based on next draws
+   - **When to use** (most common situations):
+     - You have genbutsu or safe tiles available
+     - Hand is iishanten with some useful tiles remaining
+     - Not in critical ranking situation (e.g., 2nd place with moderate point gap)
+     - Opponent riichi but you're not desperately behind
+     - Turn 8-12 (mid-game) with hand still having potential
    - **Relatively safe tiles for waiting strategy**:
      - Isolated honor tiles (especially non-yaku honors or single yaku honor tiles)
+     - Genbutsu (absolute safe tiles from riichi player's river)
      - Suji of tiles discarded in early turns
      - Terminal tiles (1, 9) when many similar tiles are visible in rivers
-   - **Example of waiting strategy**: 14 tiles 1m2m1p2p3p4p5p5s6s7s北北北發 (dealer 1st place, opponent riichi)
-     - Discard 發: Isolated tile, not a yaku (only 1 tile), honor tanki wait is unlikely
-     - Keeps possibility to progress with useful tiles (3m, 3p, 6p) = 3 types
-     - Additionally, cutting 發 allows many tiles (1m, 2m, 1p, 2p, 4p, 5p, etc.) to form jantou for tenpai
-     - Maintains flexibility to change strategy next turn
-   - **Key point**: In advantageous positions (dealer 1st place), no need to immediately fold completely
-   - Compare 1-2 turns to assess situation, then decide to attack or fold with genbutsu
+   - **Example 1**: 14 tiles 1m2m1p2p3p4p5p5s6s7s北北北發 (dealer 1st place, opponent riichi)
+     - Discard 發: Genbutsu (safe), isolated tile
+     - Keeps possibility to progress with useful tiles (3m, 2p, 3p, 6p)
+     - Additionally, cutting 發 allows many tiles to form jantou for tenpai
+     - Next turn: If you draw 3m → shift to attack; if situation worsens → continue waiting or fold with genbutsu
+   - **Example 2**: 14 tiles 1m2m1p3p4p5p6p5s6s7s北北北發 (2nd place, 5000 points behind 1st, turn 11, kamicha riichi)
+     - Discard 發: Genbutsu (absolute safety), isolated tile
+     - Hand is iishanten with useful tiles (3m, 2p, etc.) still available
+     - NOT complete fold - if you draw 3m next turn, you can shift to attack
+     - Maintains flexibility while avoiding unnecessary risk
+   - **Strategy flow**:
+     1. Discard safe tile (genbutsu or relatively safe) this turn
+     2. Observe next draw
+     3. If hand improves (draw useful tile) → consider shifting to attack
+     4. If situation worsens or hand doesn't improve → continue waiting or shift to complete fold
+   - **Key point**: Waiting strategy is about **maintaining flexibility**, not giving up completely
 
-   **3. Full attack**:
+   **2. Complete fold (ベタ降り) - ONLY for extreme situations**:
+   - Discard only genbutsu (absolute safe tiles) for multiple consecutive turns
+   - **Explicitly abandon all winning possibility** for the rest of the hand
+   - Risk: 0%, Return: Completely abandon winning possibility
+   - **Critical difference from waiting strategy**: You commit to folding for ALL remaining turns, not just one turn
+   - **When to use** (rare, extreme situations only):
+     - Oorasu (all-last) with critical ranking (e.g., 2nd place, 3rd place would drop you out of top 3)
+     - Large point gap that cannot be closed even with big win
+     - Hand is 3+ shanten (extremely distant) with no realistic winning possibility
+     - You have multiple genbutsu tiles available for remaining turns
+     - **AND** preserving current ranking is absolutely critical
+   - **Example**: Oorasu, you're in 2nd place with 18000 points, 1st has 35000, 3rd has 17000. Opponent riichi. Your hand is 3-shanten.
+     - Complete fold is correct: Cannot catch 1st place, but 3rd place is very close
+     - Must preserve 2nd place at all costs → fold completely with genbutsu
+   - **Important**: Do NOT use complete fold when:
+     - Hand is only iishanten with useful tiles
+     - You're in non-critical round (East 2, not oorasu)
+     - You don't have enough genbutsu for remaining turns
+     - In these cases, use **waiting strategy** instead
+
+   **3. Full attack (全力で攻める) - ONLY when winning is critical**:
    - Discard tiles that progress the hand even if dangerous
    - Risk: High, Return: Maximize winning possibility
-   - When to use: Need to close large point gap, very good hand
+   - **When to use** (rare situations):
+     - Oorasu and you MUST win to improve ranking (e.g., 4th place needs big win)
+     - Very good hand (tenpai or good iishanten) with high-value potential
+     - Large point gap that requires winning to close
+   - **Example**: Oorasu, you're in 4th place with 15000 points, need mangan to reach 3rd. Your hand is tenpai with mangan potential.
+     - Full attack is correct: Only winning can save your ranking
+     - Accept the risk of dealing in
 
-   **Waiting strategy principles**:
-   - In dealer 1st place or other advantageous positions, immediate complete fold is not necessary
-   - Discard relatively safe tiles for 1-2 turns to observe the situation
-   - If hand progresses → shift to attack, if situation worsens → fold with genbutsu
-   - **Flexibility is key**: Keep options open to change strategy based on developments
+   **Default decision tree for push/fold situations**:
+   1. **Check if you have genbutsu or safe tiles** → If yes, proceed to step 2
+   2. **Check hand distance** → If iishanten or better with useful tiles, proceed to step 3
+   3. **Check ranking/point situation** → If not critical (e.g., 2nd place, moderate gap), proceed to step 4
+   4. **DEFAULT: Use waiting strategy** → Discard safe tile this turn, keep flexibility for next turn
+   5. **Only use complete fold if**: Oorasu + critical ranking + extremely distant hand + multiple genbutsu available
+   6. **Only use full attack if**: Must win to improve ranking + good hand
 
    **In problem solutions**:
-   - Always consider all three strategies as candidates
-   - Analyze which strategy is optimal based on:
-     - Current ranking and point difference
-     - Hand distance (shanten) and useful tile types
-     - Opponent's hand strength (from river analysis)
-     - Dealer/non-dealer position
+   - **Default to waiting strategy** for most push/fold situations
+   - Clearly distinguish between "waiting strategy" (maintaining flexibility) and "complete fold" (abandoning winning possibility)
+   - When describing waiting strategy, emphasize: "This turn we discard safe tile, but if we draw [useful tile] next turn, we can shift to attack"
+   - Only recommend complete fold when the situation is truly extreme
+   - Always analyze all three strategies as candidates, but recognize that waiting strategy is most common
 
 ## Genbutsu (現物) - Absolute Safe Tiles
 
@@ -621,16 +682,34 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
    - Point distribution is consistent with round/honba
 
 8. **Candidate discard ordering and presentation**:
-   - **ALWAYS order candidates from best to worst** (lowest risk to highest risk)
+
+   **Two valid approaches for organizing candidates**:
+
+   **Approach A: Strategy-based classification (RECOMMENDED for push/fold problems)**:
+   - Organize candidates by the three strategies: Waiting, Complete fold, Full attack
+   - Present the BEST strategy first (usually waiting strategy)
+   - **Example** (push/fold problem with genbutsu):
+     - Candidate 1: Discard 發 - **Waiting strategy (BEST)** - Genbutsu (safe), keeps hand progression possible
+     - Candidate 2: Discard 5p - **Complete fold strategy** - Also genbutsu, but cuts off useful tile (only use if extreme situation)
+     - Candidate 3: Discard 1p - **Attack strategy (WORST)** - Not genbutsu, high risk, inappropriate for this situation
+   - **Why this approach**: Clearly demonstrates the three strategic options and their appropriateness
+   - **When to use**: Push/fold problems where demonstrating strategic thinking is important
+
+   **Approach B: Risk-based ordering (GOOD for other problem types)**:
+   - **Order candidates from best to worst** (lowest risk to highest risk)
    - Candidate 1 should be the BEST option (recommended choice)
    - Candidate 2 should be the second-best option
    - Candidate 3 should be the worst option among the candidates discussed
-   - **Why this matters**: Readers naturally expect candidates to be presented in order of quality
-   - **Example ordering** (push/fold problem):
-     - Candidate 1: Discard genbutsu tile (safest, fold) ← BEST
-     - Candidate 2: Discard terminal tile 9m (medium risk, attack) ← Second-best
-     - Candidate 3: Discard 1p early tile (highest risk, attack) ← WORST
-   - **Clearly label the worst candidate**: Add clarifying text like "最も危険" (most dangerous) or "3つの候補の中で最悪" (worst among the three candidates)
+   - **Example** (riichi decision problem):
+     - Candidate 1: Riichi with 3p discard (best wait) ← BEST
+     - Candidate 2: Riichi with 6m discard (worse wait) ← Second-best
+     - Candidate 3: Don't riichi (miss opportunity) ← WORST
+   - **When to use**: Riichi decision, wait selection, hand development problems
+
+   **General guidelines**:
+   - **Clearly label each candidate** with its strategy or risk level
+   - **Explain why each candidate is better or worse** than others
+   - **Always label the worst candidate** explicitly: "最も危険" or "3つの候補の中で最悪"
    - **Avoid confusing ordering**: Do NOT put the worst option as Candidate 2 and second-worst as Candidate 3
 
 9. **Expected value calculation and push/fold analysis** (for push/fold theme problems):
@@ -663,10 +742,23 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
      - Example: "Deal-in loss: 2000-8000 points scale (realistically 3000-6000 points)"
    - **DO NOT use single-point guesses** like "4000 points × 35% = 1400 points expected loss"
 
-   **For final comparison**:
+   **For final comparison and strategy selection**:
    - **DO use qualitative comparison**:
      - Example: "Winning expectation (extremely low, even if winning only 1000-2000 points) << Deal-in loss (3000-6000 points scale)"
    - **DO NOT fabricate numeric expected values** without clear basis
+   - **CRITICAL: Distinguish between "waiting strategy" and "complete fold"**:
+     - ❌ Wrong: "This is a complete fold situation, discard genbutsu and abandon winning possibility"
+       - (When hand is iishanten with useful tiles, NOT extreme situation)
+     - ✅ Correct: "This is a waiting strategy situation. Discard genbutsu (發) this turn to stay safe, but if we draw useful tile (3m) next turn, we can shift to attack. Maintains flexibility."
+     - **Default to waiting strategy** unless situation is extreme (oorasu + critical ranking + 3+ shanten)
+   - **When recommending waiting strategy**:
+     - Explicitly mention: "This is waiting strategy, NOT complete fold"
+     - Explain: "We keep the possibility to win if hand improves next turn"
+     - Describe next-turn flexibility: "If we draw [useful tile], we can shift to attack"
+   - **When recommending complete fold**:
+     - Explain why situation is extreme enough to abandon winning completely
+     - Verify: Oorasu? Critical ranking? 3+ shanten? Multiple genbutsu for remaining turns?
+     - If NOT all conditions met → use waiting strategy instead
 
 ## Commands
 
