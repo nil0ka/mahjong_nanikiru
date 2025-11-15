@@ -334,7 +334,7 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
      - Isolated honor tiles (especially non-yaku honors or single yaku honor tiles)
      - Suji of tiles discarded in early turns
      - Terminal tiles (1, 9) when many similar tiles are visible in rivers
-   - **Example of waiting strategy** (Problem 001):
+   - **Example of waiting strategy**: 14 tiles 1m2m1p2p3p4p5p5s6s7s北北北發 (dealer 1st place, opponent riichi)
      - Discard 發: Isolated tile, not a yaku (only 1 tile), honor tanki wait is unlikely
      - Keeps possibility to progress with useful tiles (3m, 3p, 6p) = 3 types
      - Additionally, cutting 發 allows many tiles (1m, 2m, 1p, 2p, 4p, 5p, etc.) to form jantou for tenpai
@@ -413,9 +413,9 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
    - **Important**: A hand might be iishanten for standard but tenpai for chiitoitsu - always check all patterns
 
 2. **Verify problem statements match reality**:
-   - If you state "現在テンパイ" (currently tenpai), the 13-tile hand must actually be tenpai
+   - If you state "現在テンパイ" (currently tenpai), the 14-tile hand must actually be tenpai
    - If you state "🀓を引けばテンパイ" (drawing 🀓 makes it tenpai), verify this by calculation
-   - **Problem 001 error example**: Stated "iishanten" and "drawing 🀓 makes it tenpai", but the hand was actually ryanshanten+
+   - **Common error**: Stating shanten of 13-tile hand in problem text, when it should describe 14-tile hand (13 + tsumo)
 
 3. **Recommended hand creation process**:
    - Start with a complete winning hand (14 tiles = 4 mentsu + 1 jantou)
@@ -437,7 +437,7 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
      - 🀔🀕🀖 = `5s6s7s` = **567s sequence** (NOT 456s!)
      - 🀙🀚🀛 = `1p2p3p` = **123p sequence** (NOT 234p!)
      - Always convert to numbers first, then verify sequence
-     - Example error from Problem 001: Relied on visual Unicode → misidentified 567s as "456s" → completely wrong analysis
+     - **Common error**: Relying on visual Unicode → misidentifying 567s as "456s" → completely wrong analysis
    - **Calculate the actual structure of 5+ consecutive tiles carefully**:
      - Example: 1p2p3p4p5p = 123p (sequence) + 45p (twoside wait)
        - OR: 234p (sequence) + 1p (isolated) + 5p (isolated)
@@ -463,16 +463,20 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
      - ✅ Correct: "456sの順子" (just a sequence)
      - Iipeikou example: 234m + 234m (same sequence twice)
    - **Critical: Understand isolated tiles vs useful tiles**:
-     - ❌ Wrong: "發 is a useful tile" (in Problem 001 context)
+     - ❌ Wrong: "發 is a useful tile" (in context of 14 tiles 1m2m1p2p3p4p5p5s6s7s北北北發)
      - ✅ Correct: "發 is an isolated tile that should be discarded. Cutting 發 allows many tiles to form jantou (pair) for tenpai"
-     - Example (Problem 001): Cutting 發 → drawing 1m, 2m, 1p, 2p, 4p, 5p, 3p, 6p forms jantou → tenpai
-     - Useful tiles are those that directly advance the hand toward tenpai (e.g., 3m, 3p, 6p in Problem 001)
-   - **Example verification for problem 001 error**:
-     - 13-tile hand: 🀇🀈🀙🀚🀛🀜🀔🀕🀖🀃🀃🀃🀅 → **ryanshanten (2-shanten)**
+     - Example with 14 tiles 1m2m1p2p3p4p5p5s6s7s北北北發:
+       - Useful tiles (directly advance to tenpai): 3m, 3p, 6p = 3 types
+       - Isolated tile to discard: 發
+       - Cutting 發 → drawing 1m, 2m, 1p, 2p, 4p, 5p, 3p, 6p forms jantou → tenpai
+   - **Example verification: Correct shanten calculation**:
+     - 13-tile hand: 🀇🀈🀙🀚🀛🀜🀔🀕🀖🀃🀃🀃🀅 (1m2m1p2p3p4p5s6s7s北北北發)
+       - Calculate shanten: **ryanshanten (2-shanten)**
      - Tsumo tile: 🀝 (5p)
-     - 14-tile hand: 🀇🀈🀙🀚🀛🀜🀝🀔🀕🀖🀃🀃🀃🀅 → **iishanten (1-shanten)**
-     - Problem statement should say: "現在イーシャンテン" (currently iishanten), NOT "リャンシャンテン"
-     - **Error**: Problem stated "リャンシャンテン" but the 14-tile hand is actually iishanten
+     - 14-tile hand: 🀇🀈🀙🀚🀛🀜🀝🀔🀕🀖🀃🀃🀃🀅 (1m2m1p2p3p4p5p5s6s7s北北北發)
+       - Calculate shanten: **iishanten (1-shanten)**
+     - Problem statement should describe 14-tile hand: "現在イーシャンテン" (currently iishanten)
+     - **Common error**: Describing 13-tile shanten as "current" state
 
 5. **Match hand state to problem theme**:
    - **Push/fold problems** require hands that are far from tenpai:
@@ -480,13 +484,13 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
      - Ryanshanten or further
      - Low point potential (1-2 han only)
      - **If drawing ANY of 4+ different tile types leads to immediate or very quick tenpai, the hand is TOO GOOD for push/fold**
-     - **Example of GOOD hand for push/fold** (Problem 001, after correction):
-       - 14 tiles: 🀇🀈🀙🀚🀛🀜🀝🀔🀕🀖🀃🀃🀃🀅 (iishanten)
+     - **Example of GOOD hand for push/fold**:
+       - 14 tiles: 🀇🀈🀙🀚🀛🀜🀝🀔🀕🀖🀃🀃🀃🀅 (1m2m1p2p3p4p5p5s6s7s北北北發, iishanten)
        - Structure: 北北北 (ankou) + 567s (sequence) + 123p (sequence) + 12m (edge wait) + 45p (twoside wait) + 發 (isolated)
-       - Useful tiles: 🀉 (3m), 🀛 (3p), 🀞 (6p) = **3 types** (發 is NOT useful, rather should be discarded)
+       - Useful tiles: 🀉 (3m), 🀛 (3p), 🀞 (6p) = **3 types** (發 is NOT useful, should be discarded)
        - Important: 發 cutting allows many tiles to form jantou (pair) for tenpai
        - **Verdict**: This hand has limited useful tiles (3 types) → suitable for push/fold theme
-       - **Note**: Initially misidentified structure as "456s sequence" and "234p sequence" → led to counting 發 as 4th useful tile
+       - **Common pitfall**: Misidentifying structure as "456s" and "234p" → incorrectly counting 發 as 4th useful tile
      - **Example of GOOD hand for push/fold**:
        - Should have only 2-3 useful tile types
        - Both edge waits or bad shapes
@@ -568,7 +572,7 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
    - Verify you're reading the 13-tile hand correctly from the problem (check each tile one by one using the reference table)
 
 2. **Independent shanten calculation**:
-   - Do NOT trust the problem description blindly (Problem 001 had errors!)
+   - Do NOT trust the problem description blindly - always verify independently
    - **ALWAYS use the Unicode tile reference table** to correctly identify each tile first
    - Calculate the actual shanten of the 13-tile hand yourself
    - **Test ALL useful tiles** to verify what happens when drawn:
