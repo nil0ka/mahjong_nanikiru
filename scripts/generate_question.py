@@ -404,8 +404,19 @@ def validate_problem_content(content: str) -> Tuple[bool, str]:
     Returns:
         (検証結果, エラーメッセージ)
     """
+    # ツモ牌を抽出
+    tsumo_match = re.search(r'## ツモ牌\s*```\s*([🀀-🀡]+)\s*```', content)
+    if not tsumo_match:
+        return False, "ツモ牌が見つかりません。何を切るかの問題にはツモ牌の明記が必須です。"
+
+    tsumo_str = tsumo_match.group(1)
+    tsumo_tiles = parse_tiles(tsumo_str)
+
+    if len(tsumo_tiles) != 1:
+        return False, f"ツモ牌は1枚である必要があります（{len(tsumo_tiles)}枚）"
+
     # 手牌を抽出
-    hand_match = re.search(r'## あなたの手牌\s*```\s*([🀀-🀡]+)\s*```', content)
+    hand_match = re.search(r'## あなたの手牌[（(]13枚[)）]?\s*```\s*([🀀-🀡]+)\s*```', content)
     if not hand_match:
         return False, "手牌が見つかりません"
 
@@ -479,6 +490,7 @@ def validate_problem_content(content: str) -> Tuple[bool, str]:
 
     # すべての牌を集計
     all_tiles = hand_tiles.copy()
+    all_tiles.extend(tsumo_tiles)  # ツモ牌を追加
     for river in rivers.values():
         all_tiles.extend(river)
     all_tiles.extend(dora_tiles)
@@ -621,8 +633,9 @@ def generate_question(date_str: str, max_retries: int = 3) -> str:
 7. 最終確認：作成した13枚の手牌が問題として成立するか確認
 
 確認事項（必ず守ること）:
+- **ツモ牌の明記**: 必ず13枚の手牌とは別にツモ牌1枚を明記すること。ツモ牌なしでは「何を切るか」の問題は成立しない
 - **手牌の妥当性**: 上記の手順で作成し、完成形から逆算して構成すること
-- **牌の枚数制限**: 各牌は4枚までしか存在しない。手牌+全プレイヤーの河+ドラ表示牌+鳴き牌で同じ牌が5枚以上にならないこと
+- **牌の枚数制限**: 各牌は4枚までしか存在しない。手牌(13枚)+ツモ牌(1枚)+全プレイヤーの河+ドラ表示牌+鳴き牌で同じ牌が5枚以上にならないこと
 - **河の枚数**: 鳴きなしの場合、各プレイヤーの河の枚数は（巡目 - 1）枚が基本。例：11巡目なら各プレイヤーの河は基本10枚
 - **点数配分の妥当性**:
   - 4人の合計点数が100000点であること
@@ -650,9 +663,14 @@ def generate_question(date_str: str, max_retries: int = 3) -> str:
 - ドラ表示牌: [牌]
 - 巡目: [X巡目]
 
-## あなたの手牌
+## あなたの手牌（13枚）
 ```
 [13枚の牌をUnicodeで]
+```
+
+## ツモ牌
+```
+[1枚の牌をUnicodeで]
 ```
 
 ## 河（捨て牌）

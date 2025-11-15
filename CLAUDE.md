@@ -50,7 +50,10 @@ Problems use Unicode Mahjong tiles (🀇-🀏 萬子、🀙-🀡 筒子、🀐-�
 - **Difficulty level**: 10-point scale (★☆☆☆☆☆☆☆☆☆ 1/10 to ★★★★★★★★★★ 10/10)
 - **Theme**: Problem category (e.g., Riichi decision, hand selection, push/fold, wait selection, formal tenpai, calling decision, safe tile selection)
 - **Game state**: Round (東1局, etc.), seat wind, dora indicator, turn number
-- **Hand tiles**: Exactly 13 tiles
+- **Hand tiles**: Exactly 14 tiles (13 tiles in hand + 1 drawn tile)
+  - **CRITICAL**: Must specify the drawn tile (ツモ牌) separately from the 13-tile hand
+  - The problem asks "what to discard from these 14 tiles"
+  - Without specifying the drawn tile, the problem cannot be answered correctly
 - **Discards (河)**: Discard piles for self, shimocha (下家), toimen (対面), and kamicha (上家)
 - **Situation**: Additional context as needed
 

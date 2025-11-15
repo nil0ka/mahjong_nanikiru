@@ -61,7 +61,7 @@ def validate_solution_content(problem_content: str, solution_content: str) -> Tu
         (検証結果, エラーメッセージ)
     """
     # 問題から手牌を抽出
-    hand_match = re.search(r'## あなたの手牌\s*```\s*([🀀-🀡]+)\s*```', problem_content)
+    hand_match = re.search(r'## あなたの手牌[（(]13枚[)）]?\s*```\s*([🀀-🀡]+)\s*```', problem_content)
     if not hand_match:
         return True, ""  # 手牌が見つからない場合はスキップ
 
@@ -70,6 +70,16 @@ def validate_solution_content(problem_content: str, solution_content: str) -> Tu
 
     if len(hand_tiles) != 13:
         return True, ""  # 手牌が13枚でない場合はスキップ
+
+    # 問題からツモ牌を抽出
+    tsumo_match = re.search(r'## ツモ牌\s*```\s*([🀀-🀡]+)\s*```', problem_content)
+    tsumo_tiles = []
+    if tsumo_match:
+        tsumo_str = tsumo_match.group(1)
+        tsumo_tiles = parse_tiles(tsumo_str)
+
+    # 14枚（手牌13枚+ツモ1枚）の全体を作成
+    all_14_tiles = hand_tiles + tsumo_tiles
 
     # 解答から推奨打牌を抽出
     discard_patterns = [
@@ -87,9 +97,9 @@ def validate_solution_content(problem_content: str, solution_content: str) -> Tu
                 recommended_discard = recommended_discard[0]
                 break
 
-    # 推奨打牌が手牌に含まれているか確認
-    if recommended_discard and recommended_discard not in hand_tiles:
-        return False, f"推奨打牌 {recommended_discard} が手牌に含まれていません"
+    # 推奨打牌が14枚（手牌+ツモ）に含まれているか確認
+    if recommended_discard and recommended_discard not in all_14_tiles:
+        return False, f"推奨打牌 {recommended_discard} が手牌（13枚）またはツモ牌に含まれていません"
 
     # 解答で述べている向聴数が正しいか確認（簡易版）
     solution_lower = solution_content.lower()
@@ -195,14 +205,19 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
 {problem_content}
 
 【重要な分析手順】
-1. **Unicode牌の正確な識別**:
+1. **ツモ牌の確認**:
+   - **問題文にツモ牌が明記されているか確認**
+   - ツモ牌がない場合：問題の誤りを指摘し、「ツモ牌によって判断が変わる可能性がある」旨を記載
+   - ツモ牌がある場合：14枚（手牌13枚+ツモ1枚）から何を切るかを判断
+
+2. **Unicode牌の正確な識別**:
    - **必ず以下の参照表を使って全ての牌を識別してください**:
      - 🀗は8s（七索ではない）、🀖は7s
      - 🀠は8p（九筒ではない）、🀡は9p
      - 🀎は8m（九萬ではない）、🀏は9m
-   - 手牌13枚を1枚ずつ参照表で確認すること
+   - 手牌13枚とツモ牌1枚を1枚ずつ参照表で確認すること
 
-2. **手牌の向聴数を計算**:
+3. **手牌の向聴数を計算**:
    - 問題文の記述を鵜呑みにせず、実際に手牌（13枚）の向聴数を計算してください
    - **3つのパターンを検討**:
      - 標準形（4面子1雀頭）
@@ -220,14 +235,15 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
 
 3. **見えている牌の集計**:
    - 手牌13枚
+   - ツモ牌1枚
    - 全プレイヤーの河（自分、下家、対面、上家）
    - ドラ表示牌
    - 鳴き牌（ある場合）
    - これらから各牌の残り枚数を正確に計算（各牌は4枚まで）
 
 4. **推奨打牌の妥当性確認**:
-   - 推奨する打牌が実際に手牌に含まれていることを確認
-   - 手牌にない牌を「切るべき」と書かないこと
+   - 推奨する打牌が実際に14枚（手牌13枚+ツモ1枚）に含まれていることを確認
+   - 14枚にない牌を「切るべき」と書かないこと
 
 5. **現物（げんぶつ）の識別**:
    - **押し引き・安全牌選択問題では必須**: リーチがかかっている場合、現物を正確に識別すること
