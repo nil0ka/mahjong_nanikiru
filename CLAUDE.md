@@ -67,6 +67,38 @@ Answers include:
 - Quantitative analysis (tile acceptance, etc.)
 - Learning points
 
+## Tile Notation Policy
+
+**MANDATORY: Unicode + Numeric Notation (併記)**
+
+To prevent misidentification errors (e.g., confusing 567s with "456s"), all problems and solutions must use **both Unicode and numeric notation**:
+
+**Format**:
+```markdown
+## あなたの手牌（13枚）
+\`\`\`
+🀇🀈🀙🀚🀛🀜🀔🀕🀖🀃🀃🀃🀅
+(1m2m1p2p3p4p5s6s7s北北北發)
+\`\`\`
+
+## ツモ牌
+\`\`\`
+🀝
+(5p)
+\`\`\`
+```
+
+**Why this format**:
+- Unicode tiles (🀔🀕🀖) provide visual representation for mahjong players
+- Numeric notation (5s6s7s) prevents misidentification and ensures accurate analysis
+- Combining both maximizes readability and accuracy
+
+**Internal analysis process**:
+1. Read Unicode tiles using reference table (one by one)
+2. **Convert to numeric notation** (e.g., 🀔🀕🀖 → `5s6s7s`)
+3. Analyze hand structure using numeric notation
+4. Verify sequences numerically (5-6-7 is continuous, NOT 4-5-6)
+
 ### Unicode Mahjong Tiles Reference
 
 **CRITICAL**: Always refer to this table when reading or writing mahjong tiles to ensure correct tile identification.
@@ -285,6 +317,50 @@ Answers include:
    - Factor in dora tiles for accurate calculations
    - For push/fold: State opponents' visible strength and point positions
 
+5. **Push/fold decision-making: Three strategies**:
+
+   Push/fold problems should not be presented as a simple "attack/fold" binary choice. There are **three strategic options**:
+
+   **1. Complete fold (ベタ降り)**:
+   - Discard only genbutsu (absolute safe tiles) to aim for ryuukyoku
+   - Risk: 0%, Return: Completely abandon winning possibility
+   - When to use: Oorasu with large point gap, extremely distant hand, critical ranking situation
+
+   **2. Waiting strategy (様子見) - CRITICAL for realistic play**:
+   - **Discard relatively safe tiles while keeping hand progression possible**
+   - Risk: Low-Medium, Return: Keep option to attack if hand improves
+   - When to use: Dealer in 1st place, small point gap, iishanten with useful tiles
+   - **Relatively safe tiles for waiting strategy**:
+     - Isolated honor tiles (especially non-yaku honors or single yaku honor tiles)
+     - Suji of tiles discarded in early turns
+     - Terminal tiles (1, 9) when many similar tiles are visible in rivers
+   - **Example of waiting strategy** (Problem 001):
+     - Discard 發: Isolated tile, not a yaku (only 1 tile), honor tanki wait is unlikely
+     - Keeps possibility to progress with useful tiles (3m, 3p, 6p) = 3 types
+     - Additionally, cutting 發 allows many tiles (1m, 2m, 1p, 2p, 4p, 5p, etc.) to form jantou for tenpai
+     - Maintains flexibility to change strategy next turn
+   - **Key point**: In advantageous positions (dealer 1st place), no need to immediately fold completely
+   - Compare 1-2 turns to assess situation, then decide to attack or fold with genbutsu
+
+   **3. Full attack**:
+   - Discard tiles that progress the hand even if dangerous
+   - Risk: High, Return: Maximize winning possibility
+   - When to use: Need to close large point gap, very good hand
+
+   **Waiting strategy principles**:
+   - In dealer 1st place or other advantageous positions, immediate complete fold is not necessary
+   - Discard relatively safe tiles for 1-2 turns to observe the situation
+   - If hand progresses → shift to attack, if situation worsens → fold with genbutsu
+   - **Flexibility is key**: Keep options open to change strategy based on developments
+
+   **In problem solutions**:
+   - Always consider all three strategies as candidates
+   - Analyze which strategy is optimal based on:
+     - Current ranking and point difference
+     - Hand distance (shanten) and useful tile types
+     - Opponent's hand strength (from river analysis)
+     - Dealer/non-dealer position
+
 ## Genbutsu (現物) - Absolute Safe Tiles
 
 **Genbutsu (現物) is one of the most important concepts in mahjong defense**:
@@ -351,8 +427,28 @@ Answers include:
    - Describe the hand state accurately in the problem text
 
 4. **Critical: Verify shanten calculation thoroughly**:
-   - **ALWAYS use the Unicode tile reference table** to correctly identify each tile
-   - **Calculate shanten for the base 13-tile hand** (before any draws)
+   - **MANDATORY PROCESS: Convert Unicode to numeric notation first**:
+     - Step 1: Read Unicode tiles using reference table (one by one)
+     - Step 2: **Convert to numeric notation** (e.g., 🀔🀕🀖 → `5s6s7s`)
+     - Step 3: Analyze structure using numeric notation
+     - Step 4: Verify sequence continuity numerically (5-6-7 is continuous)
+     - **Why**: Prevents visual misidentification errors (e.g., confusing 567s with "456s")
+   - **CRITICAL: Verify tile sequence order when identifying sequences**:
+     - 🀔🀕🀖 = `5s6s7s` = **567s sequence** (NOT 456s!)
+     - 🀙🀚🀛 = `1p2p3p` = **123p sequence** (NOT 234p!)
+     - Always convert to numbers first, then verify sequence
+     - Example error from Problem 001: Relied on visual Unicode → misidentified 567s as "456s" → completely wrong analysis
+   - **Calculate the actual structure of 5+ consecutive tiles carefully**:
+     - Example: 1p2p3p4p5p = 123p (sequence) + 45p (twoside wait)
+       - OR: 234p (sequence) + 1p (isolated) + 5p (isolated)
+       - OR: 345p (sequence) + 12p (edge wait)
+     - Consider all possible interpretations and choose the one with best shape
+   - **Calculate shanten from the 14-tile position** (13-tile hand + tsumo tile):
+     - The problem asks "what to discard from these 14 tiles"
+     - Calculate the shanten of the full 14-tile hand
+     - This is what should be stated in the problem description
+   - **Then calculate shanten for the base 13-tile hand** (before the tsumo):
+     - This helps understand how the tsumo tile affects the hand
    - **Test EVERY useful tile** to see what happens when drawn:
      - Example: If you claim "drawing 4p makes it tenpai", actually add 4p to the hand and verify it becomes 14 tiles with only 1 tile away from winning
      - Check if drawing other tiles also leads to tenpai - if too many tiles lead to quick tenpai, the hand is not appropriate for push/fold problems
@@ -360,18 +456,42 @@ Answers include:
      - Does it become tenpai? (can discard 1 tile to reach 0-shanten)
      - Does it stay iishanten? (still 1-shanten)
      - What tiles can be discarded after the draw?
-   - **Example verification for problem 001 initial error**:
-     - Base hand: 🀈🀉🀊🀙🀙🀛🀝🀔🀕🀖🀅🀅🀅 (13 tiles)
-     - Drawing 🀜(4p): 🀈🀉🀊🀙🀙🀛🀜🀝🀔🀕🀖🀅🀅🀅 (14 tiles)
-     - Analysis: 234m + 11p + 345p + 456s + hatsu-hatsu-hatsu = 5 groups complete! Can discard 1p to win immediately
-     - **This is tenpai, NOT iishanten**! The problem statement was wrong.
+   - **Use correct terminology**:
+     - ❌ Wrong: "北のポン" (pon implies a called set)
+     - ✅ Correct: "北の暗刻" (closed triplet in hand)
+     - ❌ Wrong: "456sの一盃口" (iipeikou means TWO identical sequences)
+     - ✅ Correct: "456sの順子" (just a sequence)
+     - Iipeikou example: 234m + 234m (same sequence twice)
+   - **Critical: Understand isolated tiles vs useful tiles**:
+     - ❌ Wrong: "發 is a useful tile" (in Problem 001 context)
+     - ✅ Correct: "發 is an isolated tile that should be discarded. Cutting 發 allows many tiles to form jantou (pair) for tenpai"
+     - Example (Problem 001): Cutting 發 → drawing 1m, 2m, 1p, 2p, 4p, 5p, 3p, 6p forms jantou → tenpai
+     - Useful tiles are those that directly advance the hand toward tenpai (e.g., 3m, 3p, 6p in Problem 001)
+   - **Example verification for problem 001 error**:
+     - 13-tile hand: 🀇🀈🀙🀚🀛🀜🀔🀕🀖🀃🀃🀃🀅 → **ryanshanten (2-shanten)**
+     - Tsumo tile: 🀝 (5p)
+     - 14-tile hand: 🀇🀈🀙🀚🀛🀜🀝🀔🀕🀖🀃🀃🀃🀅 → **iishanten (1-shanten)**
+     - Problem statement should say: "現在イーシャンテン" (currently iishanten), NOT "リャンシャンテン"
+     - **Error**: Problem stated "リャンシャンテン" but the 14-tile hand is actually iishanten
 
 5. **Match hand state to problem theme**:
    - **Push/fold problems** require hands that are far from tenpai:
      - Iishanten with limited useful tiles (2-3 types max)
      - Ryanshanten or further
      - Low point potential (1-2 han only)
-     - If drawing ANY of 4+ different tile types leads to immediate or very quick tenpai, the hand is TOO GOOD for push/fold
+     - **If drawing ANY of 4+ different tile types leads to immediate or very quick tenpai, the hand is TOO GOOD for push/fold**
+     - **Example of GOOD hand for push/fold** (Problem 001, after correction):
+       - 14 tiles: 🀇🀈🀙🀚🀛🀜🀝🀔🀕🀖🀃🀃🀃🀅 (iishanten)
+       - Structure: 北北北 (ankou) + 567s (sequence) + 123p (sequence) + 12m (edge wait) + 45p (twoside wait) + 發 (isolated)
+       - Useful tiles: 🀉 (3m), 🀛 (3p), 🀞 (6p) = **3 types** (發 is NOT useful, rather should be discarded)
+       - Important: 發 cutting allows many tiles to form jantou (pair) for tenpai
+       - **Verdict**: This hand has limited useful tiles (3 types) → suitable for push/fold theme
+       - **Note**: Initially misidentified structure as "456s sequence" and "234p sequence" → led to counting 發 as 4th useful tile
+     - **Example of GOOD hand for push/fold**:
+       - Should have only 2-3 useful tile types
+       - Both edge waits or bad shapes
+       - Low point potential (1-2 han only)
+       - Takes 2+ draws minimum to reach even bad-shape tenpai
    - **Riichi decision problems** require tenpai hands
    - **Hand development problems** can be iishanten or ryanshanten
    - **Wait selection problems** require tenpai or near-tenpai hands
