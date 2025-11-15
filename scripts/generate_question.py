@@ -519,6 +519,25 @@ def validate_problem_content(content: str) -> Tuple[bool, str]:
                 round_num = int(round_match.group(2))
                 honba = int(round_match.group(3))
 
+                # 親の位置を特定（東1局=東家、東2局=南家、東3局=西家、東4局=北家）
+                round_to_dealer = {1: '東', 2: '南', 3: '西', 4: '北'}
+                expected_dealer = round_to_dealer.get(round_num)
+
+                # 問題文中の親の記載をチェック
+                dealer_mention_match = re.search(r'(東家|南家|西家|北家).*親', content)
+                if dealer_mention_match:
+                    mentioned_dealer = dealer_mention_match.group(1).replace('家', '')
+                    if expected_dealer and mentioned_dealer != expected_dealer:
+                        return False, f"{wind}{round_num}局では{expected_dealer}家が親であるべきですが、{mentioned_dealer}家が親と記載されています"
+
+                # テーマをチェック
+                theme_match = re.search(r'\*\*テーマ\*\*:\s*(.+)', content)
+                if theme_match:
+                    theme = theme_match.group(1)
+                    # 押し引き問題で東1局0本場をチェック
+                    if '押し引き' in theme and wind == '東' and round_num == 1 and honba == 0:
+                        return False, f"押し引き問題では点数状況が重要なため、東1局0本場を使用すべきではありません。東2局以降または南場を使用してください。"
+
                 # 東1局0本場チェック
                 if wind == '東' and round_num == 1 and honba == 0:
                     if not all(p == 25000 for p in points):
@@ -607,12 +626,16 @@ def generate_question(date_str: str, max_retries: int = 3) -> str:
 - **河の枚数**: 鳴きなしの場合、各プレイヤーの河の枚数は（巡目 - 1）枚が基本。例：11巡目なら各プレイヤーの河は基本10枚
 - **点数配分の妥当性**:
   - 4人の合計点数が100000点であること
+  - **場と親の位置関係**: 東1局=東家が親、東2局=南家が親、東3局=西家が親、東4局=北家が親
   - **東1局0本場**: 全員が必ず25000点（ゲーム開始直後、点数変動なし）
+    - **制約**: 点数配分を変えたい場合は、東1局0本場を使用してはいけない
+    - **制約**: 押し引き問題では東1局0本場を使用してはいけない（点数状況が重要なため）
   - **東1局1本場**: 親（東家）が和了または親テンパイ流局の場合のみ発生
     - 親和了の場合：親の点数が25000点より増えているはず
     - 親テンパイ流局の場合：点数移動は小さい（±1000-3000点程度）
     - **注意**: 親の点数が大幅に減っている（例：16000点）のは不自然
   - **東2局以降・南場**: 大きな点数変動が自然（複数局が進行しているため）
+  - **推奨**: 点数状況が重要な問題（押し引き、オーラスなど）は「東2局以降」「南場」を使用
 
 以下のMarkdown形式で出力してください。他の説明は不要です。
 

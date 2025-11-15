@@ -389,33 +389,47 @@ Answers include:
    - Standard: 25000 points × 4 players = 100000 points total
    - **Always verify**: Sum of all four players' points = 100000 (or match your ruleset)
 
-2. **東1局0本場 (East 1, Round 0)**:
+2. **Dealer position by round (場と親の位置関係)**:
+   - **東1局 (East 1)**: 東家 (East seat) is dealer
+   - **東2局 (East 2)**: 南家 (South seat) is dealer
+   - **東3局 (East 3)**: 西家 (West seat) is dealer
+   - **東4局 (East 4)**: 北家 (North seat) is dealer
+   - **南1局 (South 1)**: 東家 (East seat) is dealer, then rotation continues
+   - **Always verify**: The dealer mentioned in the problem matches the expected dealer for that round
+
+3. **東1局0本場 (East 1, Round 0)**:
    - **Expected**: All players must have exactly 25000 points (starting points)
    - **Why**: This is the very first hand of the game - no wins or draws have occurred yet
    - **No exceptions**: Point deviations are not possible in East 1-0
+   - **Constraints**:
+     - If you want to vary point distributions, DO NOT use 東1局0本場
+     - For push/fold (押し引き) problems, DO NOT use 東1局0本場 as point situations are critical to the decision
 
-3. **東1局1本場 (East 1, Round 1)**:
+4. **東1局1本場 (East 1, Round 1)**:
    - **Only possible if**:
      - Dealer (東家) won the previous hand (East 1-0) → Dealer's points should have INCREASED
      - OR: Dealer was tenpai during ryuukyoku (流局) → Small point transfers (±1000-3000)
    - **NOT possible if**: Dealer's points decreased significantly (e.g., from 25000 to 16000)
    - **Why**: 1本場 means dealer retained their seat, which only happens on dealer win or dealer tenpai
 
-4. **東2局以降 or 南場 (East 2+ or South round)**:
+5. **東2局以降 or 南場 (East 2+ or South round)**:
    - **Expected**: Larger point deviations are natural (multiple hands have been played)
    - **Verify**: Point distribution should reflect plausible game progression
    - Example: 東3局1本場 with points like (32000, 28000, 24000, 16000) is reasonable
 
-5. **Validation rules for problem generation**:
+6. **Validation rules for problem generation**:
+   - ✅ **Always check**: Does the dealer position match the round? (Section 2 above)
    - ✅ **Always check**: Does the 本場 count match the point distribution story?
    - ✅ **Always check**: If using 1本場+, can you explain how the dealer retained their seat?
    - ✅ **Always check**: Sum of points = 100000 (standard ruleset)
+   - ✅ **Red flag**: 東1局0本場 with non-standard points (anything other than 25000 × 4)
+   - ✅ **Red flag**: Push/fold (押し引き) problem using 東1局0本場 (point situation is critical!)
    - ✅ **Red flag**: 東1局1本場 with dealer having fewer points than starting (25000)
    - ✅ **Red flag**: Large point swings (>10000 points) in early rounds (東1局-東2局)
 
-6. **Recommended approach**:
-   - For simple problems: Use **東1局0本場** with starting points (25000 × 4)
-   - For problems needing point pressure: Use **東3局+, 南場, or オーラス** with realistic point distributions
+7. **Recommended approach**:
+   - For simple problems where point situation is NOT important: Use **東1局0本場** with starting points (25000 × 4)
+   - For problems needing point pressure (push/fold, 押し引き, オーラス, etc.): Use **東2局+, 南場, or オーラス** with realistic point distributions
    - If using 1本場+: Write a brief explanation of how dealer retained their seat (e.g., "前局は親の2000点和了" or "前局は親テンパイ流局")
 
 ## Solution Generation: Critical Validation Points
