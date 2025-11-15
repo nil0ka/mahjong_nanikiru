@@ -123,47 +123,13 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
 
 **CRITICAL**: Always refer to this table when reading or writing mahjong tiles to ensure correct tile identification.
 
-**萬子 (Manzu / Characters)**:
-- 🀇 = 1m (一萬)
-- 🀈 = 2m (二萬)
-- 🀉 = 3m (三萬)
-- 🀊 = 4m (四萬)
-- 🀋 = 5m (五萬)
-- 🀌 = 6m (六萬)
-- 🀍 = 7m (七萬)
-- 🀎 = 8m (八萬)
-- 🀏 = 9m (九萬)
+**萬子 (Manzu)**: 🀇=1m 🀈=2m 🀉=3m 🀊=4m 🀋=5m 🀌=6m 🀍=7m 🀎=8m 🀏=9m
 
-**筒子 (Pinzu / Dots)**:
-- 🀙 = 1p (一筒)
-- 🀚 = 2p (二筒)
-- 🀛 = 3p (三筒)
-- 🀜 = 4p (四筒)
-- 🀝 = 5p (五筒)
-- 🀞 = 6p (六筒)
-- 🀟 = 7p (七筒)
-- 🀠 = 8p (八筒)
-- 🀡 = 9p (九筒)
+**筒子 (Pinzu)**: 🀙=1p 🀚=2p 🀛=3p 🀜=4p 🀝=5p 🀞=6p 🀟=7p 🀠=8p 🀡=9p
 
-**索子 (Souzu / Bamboo)**:
-- 🀐 = 1s (一索)
-- 🀑 = 2s (二索)
-- 🀒 = 3s (三索)
-- 🀓 = 4s (四索)
-- 🀔 = 5s (五索)
-- 🀕 = 6s (六索)
-- 🀖 = 7s (七索)
-- 🀗 = 8s (八索)
-- 🀘 = 9s (九索)
+**索子 (Souzu)**: 🀐=1s 🀑=2s 🀒=3s 🀓=4s 🀔=5s 🀕=6s 🀖=7s 🀗=8s 🀘=9s
 
-**字牌 (Jihai / Honor tiles)**:
-- 🀀 = 東 (East)
-- 🀁 = 南 (South)
-- 🀂 = 西 (West)
-- 🀃 = 北 (North)
-- 🀆 = 白 (White dragon)
-- 🀅 = 發 (Green dragon)
-- 🀄 = 中 (Red dragon)
+**字牌 (Honors)**: 🀀=東 🀁=南 🀂=西 🀃=北 🀆=白 🀅=發 🀄=中
 
 **Important Notes**:
 - When analyzing hands, discards, or generating problems/solutions, always verify tile identification using this reference
@@ -210,23 +176,14 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
    **6 han yaku**:
    - Chinitsu (清一色): 6 han (5 han if open) - one suit only
 
-   **Yakuman (役満) - 13+ han**:
-   - Kokushi musou (国士無双): Yakuman (closed only) - all 13 types of terminals and honors
-     - Kokushi 13-sided wait (国士無双13面待ち): Double yakuman in some rules
-   - Suuankou (四暗刻): Yakuman (closed only) - four closed triplets
-     - Suuankou tanki (四暗刻単騎): Double yakuman in some rules - waiting on the pair
-   - Daisangen (大三元): Yakuman - all three dragon triplets (haku, hatsu, chun)
-   - Shousuushii (小四喜): Yakuman - three wind triplets + one wind pair
-   - Daisuushii (大四喜): Double yakuman - all four wind triplets
-   - Tsuuiisou (字一色): Yakuman - all honors only
-   - Ryuuiisou (緑一色): Yakuman - all green tiles (2,3,4,6,8 of bamboo + green dragon)
-   - Chinroutou (清老頭): Yakuman - all terminals only (1,9 of each suit)
-   - Chuuren poutou (九蓮宝燈): Yakuman (closed only) - 1112345678999 + any tile of same suit
-     - Junsei chuuren (純正九蓮宝燈): Double yakuman in some rules - 9-sided wait
-   - Suukantsu (四槓子): Yakuman - four quads
-   - Tenhou (天和): Yakuman (dealer only) - winning on dealer's initial 14 tiles
-   - Chiihou (地和): Yakuman (non-dealer only) - winning on first draw before any calls
-   - Renhou (人和): Yakuman in some rules (often just mangan) - winning on another player's first discard
+   **Yakuman (役満) - 13+ han** (common types):
+   - Kokushi musou (国士無双): All 13 types of terminals/honors (closed only)
+   - Suuankou (四暗刻): Four closed triplets (closed only)
+   - Daisangen (大三元): All three dragon triplets
+   - Shousuushii (小四喜): Three wind triplets + one wind pair
+   - Tsuuiisou (字一色): All honors only
+   - Chuuren poutou (九蓮宝燈): 1112345678999 + any tile of same suit (closed only)
+   - Other rare yakuman: Daisuushii, Ryuuiisou, Chinroutou, Suukantsu, Tenhou, Chiihou (32000 points child ron, 48000 dealer)
 
    **Dora**:
    - Dora (ドラ): 1 han per dora tile
@@ -247,19 +204,13 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
 
 2. **Point calculations** (子 child / 親 dealer):
    - **1 han 30 fu**: 1000 ron / 300-500 tsumo (dealer: 1500 / 500 all)
-   - **2 han 25 fu** (chiitoitsu only): 1600 ron / 400-800 tsumo (dealer: 2400 / 800 all)
    - **2 han 30 fu**: 2000 ron / 500-1000 tsumo (dealer: 2900 / 1000 all)
-   - **3 han 25 fu** (chiitoitsu): 3200 ron / 800-1600 tsumo (dealer: 4800 / 1600 all)
    - **3 han 30 fu**: 3900 ron / 1000-2000 tsumo (dealer: 5800 / 2000 all)
-   - **3 han 60 fu**: 5800 ron / 1500-2900 tsumo (dealer: 8700 / 2900 all)
-   - **4 han 20 fu** (pinfu tsumo only): N/A ron / 1300-2600 tsumo (dealer: 2600 all)
-   - **4 han 25 fu** (chiitoitsu): 6400 ron / 1600-3200 tsumo (dealer: 9600 / 3200 all)
+   - **4 han 20 fu** (pinfu tsumo): N/A ron / 1300-2600 tsumo (dealer: 2600 all)
    - **4 han 30 fu**: 7700 ron / 2000-3900 tsumo (dealer: 11600 / 3900 all)
-   - **4 han 40+ fu or 5 han**: 8000 ron / 2000-4000 tsumo (dealer: 12000 / 4000 all) = **Mangan (満貫)**
-   - **6-7 han**: 12000 ron / 3000-6000 tsumo (dealer: 18000 / 6000 all) = **Haneman (跳満)**
-   - **8-10 han**: 16000 ron / 4000-8000 tsumo (dealer: 24000 / 8000 all) = **Baiman (倍満)**
-   - **11-12 han**: 24000 ron / 6000-12000 tsumo (dealer: 36000 / 12000 all) = **Sanbaiman (三倍満)**
-   - **13+ han / Yakuman**: 32000 ron / 8000-16000 tsumo (dealer: 48000 / 16000 all) = **Yakuman (役満)**
+   - **4 han 40+ fu or 5+ han**: 8000+ ron / 2000-4000+ tsumo (dealer: 12000+ / 4000+ all) = **Mangan+ (満貫以上)**
+   - **Chiitoitsu** (always 25 fu): 2 han = 1600, 3 han = 3200, 4 han = 6400 (ron, child)
+   - **Named limits**: Mangan (満貫) 8000, Haneman (跳満) 12000, Baiman (倍満) 16000, Sanbaiman (三倍満) 24000, Yakuman (役満) 32000 (ron, child)
 
    **Important fu calculations**:
    - **Pinfu tsumo: 20 fu** (only case where 20 fu exists; cannot ron with pinfu)
@@ -359,16 +310,12 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
      - Genbutsu (absolute safe tiles from riichi player's river)
      - Suji of tiles discarded in early turns
      - Terminal tiles (1, 9) when many similar tiles are visible in rivers
-   - **Example 1**: 14 tiles 1m2m1p2p3p4p5p5s6s7s北北北發 (dealer 1st place, opponent riichi)
-     - Discard 發: Genbutsu (safe), isolated tile
-     - Keeps possibility to progress with useful tiles (3m, 2p, 3p, 6p)
-     - Additionally, cutting 發 allows many tiles to form jantou for tenpai
-     - Next turn: If you draw 3m → shift to attack; if situation worsens → continue waiting or fold with genbutsu
-   - **Example 2**: 14 tiles 1m2m1p3p4p5p6p5s6s7s北北北發 (2nd place, 5000 points behind 1st, turn 11, kamicha riichi)
+   - **Example**: 14 tiles 1m2m1p2p3p4p5p5s6s7s北北北發 (2nd place, 5000 points behind 1st, turn 11, opponent riichi)
      - Discard 發: Genbutsu (absolute safety), isolated tile
-     - Hand is iishanten with useful tiles (3m, 2p, etc.) still available
-     - NOT complete fold - if you draw 3m next turn, you can shift to attack
-     - Maintains flexibility while avoiding unnecessary risk
+     - Hand is iishanten with useful tiles (3m, 3p, 6p) still available
+     - Cutting 發 allows many tiles to form jantou for tenpai
+     - Next turn: If you draw useful tile (e.g., 3m) → shift to attack; if situation worsens → continue waiting or fold
+     - **NOT complete fold** - maintains flexibility while avoiding unnecessary risk
    - **Strategy flow**:
      1. Discard safe tile (genbutsu or relatively safe) this turn
      2. Observe next draw
@@ -424,40 +371,14 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
 
 ## Genbutsu (現物) - Absolute Safe Tiles
 
-**Genbutsu (現物) is one of the most important concepts in mahjong defense**:
+**Genbutsu (現物)**: A tile that a riichi declarer has already discarded. Since a player cannot win on a tile they've already discarded, genbutsu is **100% safe (absolute safety)** - it will NEVER deal into that riichi player.
 
-1. **Definition**:
-   - **Genbutsu (現物)**: A tile that a riichi declarer has already discarded
-   - **Key rule**: A player cannot win on a tile they have already discarded
-   - **Result**: Genbutsu is **100% safe (absolutely safe)** - it will NEVER deal into that riichi player
-
-2. **Identifying genbutsu**:
-   - Look at the riichi player's discard pile (河)
-   - Any tile visible in their discards is genbutsu against that player
-   - Example: If opponent (toimen) declared riichi and has 🀗 (8s) in their river, then 🀗 is genbutsu = absolute safety
-
-3. **Common mistakes to avoid**:
-   - ❌ Wrong: "The tile is in opponent's river, so it's relatively safe"
-   - ✅ Correct: "The tile is in the riichi player's river, so it's genbutsu (absolute safety, 0% risk)"
-   - ❌ Wrong: "It's not a complete genbutsu, but the risk is low"
-   - ✅ Correct: "It IS genbutsu - there is no such thing as 'partial genbutsu'. Either it's genbutsu (100% safe) or it's not."
-
-4. **Multiple riichi players**:
-   - If player A declared riichi and has 🀗 in their river, 🀗 is genbutsu against player A
-   - But if player B also declared riichi and does NOT have 🀗 in their river, 🀗 is NOT safe against player B
-   - Always check WHICH riichi player's discard pile you're looking at
-
-5. **Priority in defense**:
-   - **1st priority: Genbutsu** (100% safe)
-   - 2nd priority: Safe honor tiles (multiple copies visible)
-   - 3rd priority: Suji tiles (safer but not 100%)
-   - 4th priority: Terminal tiles (relatively safer)
-   - When you have genbutsu available, ALWAYS use it when defending
-
-6. **In problem analysis**:
-   - When analyzing push/fold problems, clearly identify if any tiles are genbutsu
-   - Example: "🀗 is genbutsu (対面の現物) = absolute safety"
-   - Never describe genbutsu as "relatively safe" or "probably safe" - it's ABSOLUTELY safe
+**Key points**:
+- **Identifying**: Look at the riichi player's discard pile (河). Any tile visible in their discards is genbutsu.
+- **Multiple riichi players**: Tile may be genbutsu against player A but NOT against player B - always check WHICH player's river.
+- **Common mistake**: Never say "relatively safe" when it's genbutsu - it's ABSOLUTELY safe (0% risk). There's no such thing as "partial genbutsu".
+- **Defense priority**: 1st: Genbutsu (100% safe) → 2nd: Safe honors → 3rd: Suji → 4th: Terminals
+- **In analysis**: Always identify genbutsu clearly (e.g., "🀗 is genbutsu (対面の現物) = absolute safety")
 
 ## Critical: Shanten Calculation and Problem Accuracy
 
@@ -524,39 +445,20 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
      - ✅ Correct: "456sの順子" (just a sequence)
      - Iipeikou example: 234m + 234m (same sequence twice)
    - **Critical: Understand isolated tiles vs useful tiles**:
-     - ❌ Wrong: "發 is a useful tile" (in context of 14 tiles 1m2m1p2p3p4p5p5s6s7s北北北發)
-     - ✅ Correct: "發 is an isolated tile that should be discarded. Cutting 發 allows many tiles to form jantou (pair) for tenpai"
-     - Example with 14 tiles 1m2m1p2p3p4p5p5s6s7s北北北發:
-       - Useful tiles (directly advance to tenpai): 3m, 3p, 6p = 3 types
-       - Isolated tile to discard: 發
-       - Cutting 發 → drawing 1m, 2m, 1p, 2p, 4p, 5p, 3p, 6p forms jantou → tenpai
-   - **Example verification: Correct shanten calculation**:
-     - 13-tile hand: 🀇🀈🀙🀚🀛🀜🀔🀕🀖🀃🀃🀃🀅 (1m2m1p2p3p4p5s6s7s北北北發)
-       - Calculate shanten: **ryanshanten (2-shanten)**
+     - ❌ Wrong: "發 is a useful tile" (when it's isolated and should be discarded)
+     - ✅ Correct: "發 is an isolated tile that should be discarded. Cutting 發 allows many tiles to form jantou for tenpai"
+   - **Example: Correct shanten calculation and hand evaluation**:
+     - 13-tile hand: 🀇🀈🀙🀚🀛🀜🀔🀕🀖🀃🀃🀃🀅 (1m2m1p2p3p4p5s6s7s北北北發) = **ryanshanten (2-shanten)**
      - Tsumo tile: 🀝 (5p)
-     - 14-tile hand: 🀇🀈🀙🀚🀛🀜🀝🀔🀕🀖🀃🀃🀃🀅 (1m2m1p2p3p4p5p5s6s7s北北北發)
-       - Calculate shanten: **iishanten (1-shanten)**
-     - Problem statement should describe 14-tile hand: "現在イーシャンテン" (currently iishanten)
-     - **Common error**: Describing 13-tile shanten as "current" state
+     - 14-tile hand: 🀇🀈🀙🀚🀛🀜🀝🀔🀕🀖🀃🀃🀃🀅 (1m2m1p2p3p4p5p5s6s7s北北北發) = **iishanten (1-shanten)**
+     - Structure: 北北北 (ankou) + 567s (sequence) + 123p (sequence) + 12m (edge wait) + 45p (twoside wait) + 發 (isolated)
+     - Useful tiles: 🀉 (3m), 🀛 (3p), 🀞 (6p) = **3 types** (發 is NOT useful, should be discarded)
+     - Cutting 發 allows 1m/2m/1p/2p/4p/5p/3p/6p to form jantou → tenpai
+     - **Common errors**: (1) Describing 13-tile shanten as "current" state (2) Misidentifying 567s as "456s" (3) Counting 發 as useful tile
 
 5. **Match hand state to problem theme**:
-   - **Push/fold problems** require hands that are far from tenpai:
-     - Iishanten with limited useful tiles (2-3 types max)
-     - Ryanshanten or further
-     - Low point potential (1-2 han only)
-     - **If drawing ANY of 4+ different tile types leads to immediate or very quick tenpai, the hand is TOO GOOD for push/fold**
-     - **Example of GOOD hand for push/fold**:
-       - 14 tiles: 🀇🀈🀙🀚🀛🀜🀝🀔🀕🀖🀃🀃🀃🀅 (1m2m1p2p3p4p5p5s6s7s北北北發, iishanten)
-       - Structure: 北北北 (ankou) + 567s (sequence) + 123p (sequence) + 12m (edge wait) + 45p (twoside wait) + 發 (isolated)
-       - Useful tiles: 🀉 (3m), 🀛 (3p), 🀞 (6p) = **3 types** (發 is NOT useful, should be discarded)
-       - Important: 發 cutting allows many tiles to form jantou (pair) for tenpai
-       - **Verdict**: This hand has limited useful tiles (3 types) → suitable for push/fold theme
-       - **Common pitfall**: Misidentifying structure as "456s" and "234p" → incorrectly counting 發 as 4th useful tile
-     - **Example of GOOD hand for push/fold**:
-       - Should have only 2-3 useful tile types
-       - Both edge waits or bad shapes
-       - Low point potential (1-2 han only)
-       - Takes 2+ draws minimum to reach even bad-shape tenpai
+   - **Push/fold problems** require hands far from tenpai: Iishanten with 2-3 useful tile types max, ryanshanten or further, low point potential (1-2 han)
+   - **If 4+ tile types lead to quick tenpai, hand is TOO GOOD for push/fold**
    - **Riichi decision problems** require tenpai hands
    - **Hand development problems** can be iishanten or ryanshanten
    - **Wait selection problems** require tenpai or near-tenpai hands
