@@ -234,6 +234,43 @@ Answers include:
    - Factor in dora tiles for accurate calculations
    - For push/fold: State opponents' visible strength and point positions
 
+## Genbutsu (現物) - Absolute Safe Tiles
+
+**Genbutsu (現物) is one of the most important concepts in mahjong defense**:
+
+1. **Definition**:
+   - **Genbutsu (現物)**: A tile that a riichi declarer has already discarded
+   - **Key rule**: A player cannot win on a tile they have already discarded
+   - **Result**: Genbutsu is **100% safe (absolutely safe)** - it will NEVER deal into that riichi player
+
+2. **Identifying genbutsu**:
+   - Look at the riichi player's discard pile (河)
+   - Any tile visible in their discards is genbutsu against that player
+   - Example: If opponent (toimen) declared riichi and has 🀗 (8s) in their river, then 🀗 is genbutsu = absolute safety
+
+3. **Common mistakes to avoid**:
+   - ❌ Wrong: "The tile is in opponent's river, so it's relatively safe"
+   - ✅ Correct: "The tile is in the riichi player's river, so it's genbutsu (absolute safety, 0% risk)"
+   - ❌ Wrong: "It's not a complete genbutsu, but the risk is low"
+   - ✅ Correct: "It IS genbutsu - there is no such thing as 'partial genbutsu'. Either it's genbutsu (100% safe) or it's not."
+
+4. **Multiple riichi players**:
+   - If player A declared riichi and has 🀗 in their river, 🀗 is genbutsu against player A
+   - But if player B also declared riichi and does NOT have 🀗 in their river, 🀗 is NOT safe against player B
+   - Always check WHICH riichi player's discard pile you're looking at
+
+5. **Priority in defense**:
+   - **1st priority: Genbutsu** (100% safe)
+   - 2nd priority: Safe honor tiles (multiple copies visible)
+   - 3rd priority: Suji tiles (safer but not 100%)
+   - 4th priority: Terminal tiles (relatively safer)
+   - When you have genbutsu available, ALWAYS use it when defending
+
+6. **In problem analysis**:
+   - When analyzing push/fold problems, clearly identify if any tiles are genbutsu
+   - Example: "🀗 is genbutsu (対面の現物) = absolute safety"
+   - Never describe genbutsu as "relatively safe" or "probably safe" - it's ABSOLUTELY safe
+
 ## Critical: Shanten Calculation and Problem Accuracy
 
 **The most important aspect of problem generation is correctly understanding and representing the hand state**:
@@ -365,11 +402,20 @@ Answers include:
    - When stating "X tiles remaining" or "waiting on Y tiles", verify the count
    - Example: If 🀇 appears 2 times in hand + 1 in rivers = 3 visible, then 1 remaining
 
-4. **Validate recommended discard**:
+4. **Identify genbutsu (現物) correctly**:
+   - **Critical for push/fold problems**: Check if any tiles are genbutsu
+   - **How to identify**: Look at riichi player's discard pile (河)
+   - If a tile appears in the riichi player's river, it is **genbutsu = 100% safe**
+   - **Common mistake**: "The tile is in opponent's river, so it's relatively safe" ❌
+   - **Correct**: "The tile is in the riichi player's river, so it's genbutsu (絶対安全, 100% safe)" ✅
+   - Example: Problem states "対面（リーチ）の河: ...🀗..." and you have 🀗 → This IS genbutsu
+   - Never say "relatively safe" when it's actually genbutsu - it's ABSOLUTELY safe (0% risk)
+
+5. **Validate recommended discard**:
    - The tile you recommend discarding MUST be in the actual 13-tile hand
    - Do NOT recommend discarding a tile that doesn't exist in the hand
 
-5. **Validate point distribution consistency**:
+6. **Validate point distribution consistency**:
    - Check that the sum of all four players' points equals 100000
    - **東1局0本場**: All players must have exactly 25000 points
      - If point distribution differs, the problem has an error - note this in your solution
@@ -379,7 +425,7 @@ Answers include:
      - If dealer has significantly fewer points (e.g., 16000), the problem setup is inconsistent - note this in your solution
    - When you find inconsistencies, point them out in your solution explanation, but still answer the problem based on the given scenario
 
-6. **Validation checks** (automated in `scripts/generate_solution.py`):
+7. **Validation checks** (automated in `scripts/generate_solution.py`):
    - Recommended discard is in the hand
    - Shanten claims match actual calculation
    - Tile counts are accurate
