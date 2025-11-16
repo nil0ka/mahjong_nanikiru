@@ -653,12 +653,29 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
    - Recommend the wait with more acceptance unless there are strong compensating factors
    - If choosing worse wait, explain why (e.g., much higher point value, specific tactical reason)
 
-   e. **Common 4-tile sequence patterns**:
+   e. **Common complex wait patterns**:
+
+   **Pattern 1: 4-tile sequences (四連形) - Nobetan**:
    - 1234 → wait 1 or 4 (nobetan)
    - 2345 → wait 2 or 5 (nobetan)
    - 3456 → wait 3 or 6 (nobetan)
    - 5678 → wait 5 or 8 (nobetan)
    - 6789 → wait 6 or 9 (nobetan)
+
+   **Pattern 2: Ankou + consecutive tiles + pair (暗刻+連続牌+対子) - Multiple interpretations**:
+   - **CRITICAL**: This pattern is even more complex than nobetan and easily missed
+   - Example: **4445688s** (7 tiles) = 3-way wait (4s, 7s, 8s)
+     - Interpretation A: **444 (ankou) + 56 (twoside wait for 4-7) + 88 (pair)** → **4s or 7s** wait
+       - Draw 4s: 444-456-88 (4 ankou, 456 sequence, 88 jantou)
+       - Draw 7s: 444-567-88 (4 ankou, 567 sequence, 88 jantou)
+     - Interpretation B: **44 (pair) + 456 (sequence) + 88 (pair)** → **4s or 8s** wait (shanpon)
+       - Draw 4s: 444-456-88 (444 ankou, 456 sequence, 88 jantou)
+       - Draw 8s: 44-456-888 (44 jantou, 456 sequence, 888 ankou)
+     - **Result**: 4s appears in BOTH interpretations, 7s in A only, 8s in B only → **4s, 7s, 8s all win**
+   - Other examples: 2223566, 5556788, 1112344
+   - **Key characteristic**: Ankou (XXX) followed by consecutive tiles (YZ) and a pair (WW)
+   - **Why it's missed**: Multiple valid interpretations of the same tiles create overlapping waits
+   - **Detection**: Look for patterns like "XXXYZWW" where XXX=ankou, YZ=consecutive, WW=pair
 
    f. **Why nobetan is easily missed**:
    - 4-tile sequences look "complete" at first glance
@@ -666,17 +683,21 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
    - The concept of "both ends become jantou" is less intuitive
    - Solution: **Always actively scan for 1234/2345/.../6789 patterns**
 
-   g. **Validation checklist for tenpai problems**:
+   f. **Validation checklist for tenpai problems**:
    - [ ] Did I check for any 4-tile sequences in the hand?
    - [ ] If 4-tile sequence exists, did I consider nobetan wait?
+   - [ ] **Did I check for ankou + consecutive tiles + pair patterns (e.g., XXXYZWW)?**
+   - [ ] **If ankou pattern exists, did I consider multiple interpretations and overlapping waits?**
    - [ ] Did I list ALL possible wait options (not just the obvious one)?
    - [ ] Did I calculate tile acceptance for each wait option?
    - [ ] Did I compare wait options explicitly (e.g., "X tiles vs Y tiles")?
-   - [ ] Did I explain why nobetan might be missed (if applicable)?
+   - [ ] Did I explain why complex waits might be missed (if applicable)?
 
-   h. **Error prevention**:
+   g. **Error prevention**:
    - ❌ **DO NOT**: Assume 13-tile tenpai form is the only option
    - ❌ **DO NOT**: Miss 4-tile sequences (scan systematically)
+   - ❌ **DO NOT**: Miss ankou + consecutive + pair patterns (XXXYZWW)
+   - ❌ **DO NOT**: Analyze only one interpretation when multiple are possible
    - ❌ **DO NOT**: Recommend worse wait without strong justification
    - ✅ **DO**: Always check for 4-tile sequences first
    - ✅ **DO**: Calculate and compare tile acceptance for all wait options
