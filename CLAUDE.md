@@ -662,20 +662,39 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
    - 5678 → wait 5 or 8 (nobetan)
    - 6789 → wait 6 or 9 (nobetan)
 
-   **Pattern 2: Ankou + consecutive tiles + pair (暗刻+連続牌+対子) - Multiple interpretations**:
-   - **CRITICAL**: This pattern is even more complex than nobetan and easily missed
+   **Pattern 2: Complex 7-tile multi-way waits (複雑な7枚形多面待ち) - Multiple interpretations**:
+   - **CRITICAL**: These patterns are even more complex than nobetan and easily missed
+   - **General pattern**: 3+ identical tiles + consecutive numbers + pair in 7 tiles
+   - **Key characteristic**: Multiple valid interpretations of the same tiles create overlapping waits
+
+   **Type A: XXXYZWW** (暗刻 + 連続2枚 + 対子):
    - Example: **4445688s** (7 tiles) = 3-way wait (4s, 7s, 8s)
-     - Interpretation A: **444 (ankou) + 56 (twoside wait for 4-7) + 88 (pair)** → **4s or 7s** wait
-       - Draw 4s: 444-456-88 (4 ankou, 456 sequence, 88 jantou)
-       - Draw 7s: 444-567-88 (4 ankou, 567 sequence, 88 jantou)
-     - Interpretation B: **44 (pair) + 456 (sequence) + 88 (pair)** → **4s or 8s** wait (shanpon)
+     - Interpretation A: **444 (ankou) + 56 (twoside 4-7) + 88 (pair)** → **4s or 7s** wait
+       - Draw 4s: 444-456-88 (444 ankou, 456 sequence, 88 jantou)
+       - Draw 7s: 444-567-88 (444 ankou, 567 sequence, 88 jantou)
+     - Interpretation B: **44 (pair) + 456 (sequence) + 88 (pair)** → **4s or 8s** shanpon
        - Draw 4s: 444-456-88 (444 ankou, 456 sequence, 88 jantou)
        - Draw 8s: 44-456-888 (44 jantou, 456 sequence, 888 ankou)
-     - **Result**: 4s appears in BOTH interpretations, 7s in A only, 8s in B only → **4s, 7s, 8s all win**
-   - Other examples: 2223566, 5556788, 1112344
-   - **Key characteristic**: Ankou (XXX) followed by consecutive tiles (YZ) and a pair (WW)
-   - **Why it's missed**: Multiple valid interpretations of the same tiles create overlapping waits
-   - **Detection**: Look for patterns like "XXXYZWW" where XXX=ankou, YZ=consecutive, WW=pair
+     - **Result**: 4s (both), 7s (A only), 8s (B only) → **4s, 7s, 8s all win**
+   - Other examples: 2223566, 5556788, 6667899
+
+   **Type B: AAABCXX** (暗刻 + 連続2枚 + 対子):
+   - Example: **1112344s** (7 tiles) = multi-way wait
+     - Similar logic: ankou (111) + consecutive (23) + pair (44)
+     - Multiple interpretations create overlapping waits
+   - Other examples: 3334566, 7778900
+
+   **Type C: ABCCCXX** (連続 + 暗刻 + 対子):
+   - Example: **1233344s** (7 tiles) = multi-way wait
+     - Consecutive tiles (123) + ankou (333) + pair (44)
+     - Multiple interpretations create overlapping waits
+   - Other examples: 3455566, 5677788
+
+   **Detection method**:
+   - Scan for 7-tile groups with **3+ identical tiles + consecutive numbers + pair**
+   - Test ALL possible tile interpretations (ankou, sequence, pair combinations)
+   - List all unique winning tiles from all interpretations
+   - **Important**: These patterns can have 3, 4, or even 5+ way waits
 
    f. **Why nobetan is easily missed**:
    - 4-tile sequences look "complete" at first glance
