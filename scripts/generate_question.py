@@ -29,6 +29,7 @@ def load_claude_md_sections() -> str:
             "Critical: Shanten Calculation and Problem Accuracy",
             "Genbutsu - Absolute Safe Tiles",
             "Point Distribution Validation",
+            "Mahjong Problem Format",
         ]
 
         extracted_content = []
@@ -650,6 +651,13 @@ def generate_question(date_str: str, max_retries: int = 3) -> str:
    - 9-10 (Very Hard): エキスパート級、微妙な違い
    難易度を決める要素: 正解の明確さ、有力候補の数、分析の深さ、候補間のトレードオフ
 2. テーマ: 問題のテーマを選択（例：リーチ判断、手役選択、押し引き、待ち選択、形式テンパイ、鳴き判断、安全牌選択など）
+   - **CRITICAL リーチ判断問題の場合**:
+     - 手牌はテンパイしている必要がある
+     - **4連形（1234, 2345, ..., 6789）をチェックすること**
+     - 4連形がある場合、問題は**待ち選択問題**の要素を含む
+     - 例: 2m3m4m 1p2p3p4p 6s7s8s 發發發 3p + ツモ1p
+       - 選択肢: 3p切り（1p4pノベタン6枚）vs 1p切り（3p単騎2枚）
+       - 主要判断：どの待ちを選ぶか、副次判断：リーチか黙聴か
 3. 局面情報（場、自風、ドラ表示牌、巡目）を設定
 4. 河（捨て牌）の情報を含める（自分、下家、対面、上家それぞれ2〜5枚程度）
 5. **点数状況**: テーマに応じて現在の点数・順位を設定

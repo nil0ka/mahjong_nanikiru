@@ -31,6 +31,7 @@ def load_claude_md_sections() -> str:
             "Genbutsu - Absolute Safe Tiles",
             "Point Distribution Validation",
             "Candidate discard ordering and presentation",
+            "Solution Generation: Critical Validation Points",
         ]
 
         extracted_content = []
@@ -269,6 +270,11 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
 - ✅ ツモ牌が問題文に明記されているか確認
 - ✅ Unicode牌の識別（CLAUDE.md参照表を使用）
 - ✅ 手牌の向聴数を計算（標準形・七対子・国士無双の3パターン）
+- ✅ **テンパイ・リーチ判断問題の場合：4連形（1234, 2345, ..., 6789）の存在チェック**
+  - 4連形がある場合、ノベタン（延べ単・両端待ち）の可能性を必ず検討
+  - 例: 1234p → 1p待ち（11p+234p）または4p待ち（123p+44p）
+  - **全ての待ち選択肢をリストアップ**（13枚のテンパイ形に固執しない）
+  - 各待ちの受け入れ枚数を計算し、明示的に比較（「X枚 vs Y枚 = Z倍」）
 - ✅ 見えている牌を集計し、残り枚数を計算
 - ✅ 推奨打牌が14枚（手牌13枚+ツモ1枚）に含まれているか確認
 - ✅ 現物の識別（押し引き・安全牌選択問題では必須）

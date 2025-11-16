@@ -460,8 +460,15 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
    - **Push/fold problems** require hands far from tenpai: Iishanten with 2-3 useful tile types max, ryanshanten or further, low point potential (1-2 han)
    - **If 4+ tile types lead to quick tenpai, hand is TOO GOOD for push/fold**
    - **Riichi decision problems** require tenpai hands
+     - **CRITICAL**: Check for 4-tile sequences (1234, 2345, ..., 6789) which create nobetan wait options
+     - If 4-tile sequence exists, the problem becomes a **wait selection** problem, not just riichi yes/no
+     - Example: 2m3m4m 1p2p3p4p 6s7s8s 發發發 3p + tsumo 1p
+       - This creates choice between: 3p tanki (2 tiles) vs 1p4p nobetan (6 tiles)
+       - Primary decision: Which wait? Secondary decision: Riichi or dama?
    - **Hand development problems** can be iishanten or ryanshanten
-   - **Wait selection problems** require tenpai or near-tenpai hands
+   - **Wait selection problems** require tenpai or near-tenpai hands with multiple wait options
+     - Ideal: Hands with 4-tile sequences that create nobetan vs other wait trade-offs
+     - Should have clear difference in tile acceptance (e.g., 6 tiles vs 2 tiles)
 
 6. **Validation checks** (automated in `scripts/generate_question.py`):
    - Hand tile count = exactly 13
@@ -614,7 +621,68 @@ To prevent misidentification errors (e.g., confusing 567s with "456s"), all prob
    - **Always label the worst candidate** explicitly: "最も危険" or "3つの候補の中で最悪"
    - **Avoid confusing ordering**: Do NOT put the worst option as Candidate 2 and second-worst as Candidate 3
 
-9. **Expected value calculation and push/fold analysis** (for push/fold theme problems):
+9. **Tenpai wait selection validation** (for tenpai/riichi decision problems):
+
+   **CRITICAL: Always check for multiple wait options when hand is tenpai or near-tenpai**
+
+   When generating solutions for riichi decision or wait selection problems, you MUST:
+
+   a. **Check for 4-tile sequences (四連形)**:
+   - **MANDATORY**: Scan the hand for any 4-tile sequences: 1234, 2345, 3456, 4567, 5678, 6789
+   - If found, ALWAYS consider **nobetan (延べ単 / 両端待ち)** - waiting for both ends
+   - Example: 1234p can wait for 1p (forming 11p + 234p) OR 4p (forming 123p + 44p)
+   - **Common mistake**: Missing nobetan and defaulting to tanki (single tile) wait
+
+   b. **List ALL possible wait options**:
+   - Do NOT assume the 13-tile tenpai form is fixed
+   - With 14 tiles (13 + tsumo), consider ALL possible discards
+   - For each discard candidate, determine the resulting wait
+   - Example with 14 tiles (2m3m4m 1p2p3p4p 6s7s8s 發發發 3p):
+     - Discard 1p → 3p tanki wait (2 tiles remaining)
+     - Discard 3p → 1p4p nobetan wait (6 tiles remaining)
+
+   c. **Calculate tile acceptance for each wait**:
+   - Count remaining tiles for each wait option
+   - Account for tiles already in hand and visible in rivers
+   - Example:
+     - 3p tanki: 4 total - 2 in hand = 2 remaining tiles
+     - 1p4p nobetan: (4-1) + (4-1) = 3+3 = 6 remaining tiles
+
+   d. **Compare wait options explicitly**:
+   - State the comparison clearly: "Nobetan (6 tiles) vs Tanki (2 tiles) = 3x winning probability"
+   - Recommend the wait with more acceptance unless there are strong compensating factors
+   - If choosing worse wait, explain why (e.g., much higher point value, specific tactical reason)
+
+   e. **Common 4-tile sequence patterns**:
+   - 1234 → wait 1 or 4 (nobetan)
+   - 2345 → wait 2 or 5 (nobetan)
+   - 3456 → wait 3 or 6 (nobetan)
+   - 5678 → wait 5 or 8 (nobetan)
+   - 6789 → wait 6 or 9 (nobetan)
+
+   f. **Why nobetan is easily missed**:
+   - 4-tile sequences look "complete" at first glance
+   - Players instinctively parse 1234p as "123p + 4p" (sequence + isolated)
+   - The concept of "both ends become jantou" is less intuitive
+   - Solution: **Always actively scan for 1234/2345/.../6789 patterns**
+
+   g. **Validation checklist for tenpai problems**:
+   - [ ] Did I check for any 4-tile sequences in the hand?
+   - [ ] If 4-tile sequence exists, did I consider nobetan wait?
+   - [ ] Did I list ALL possible wait options (not just the obvious one)?
+   - [ ] Did I calculate tile acceptance for each wait option?
+   - [ ] Did I compare wait options explicitly (e.g., "X tiles vs Y tiles")?
+   - [ ] Did I explain why nobetan might be missed (if applicable)?
+
+   h. **Error prevention**:
+   - ❌ **DO NOT**: Assume 13-tile tenpai form is the only option
+   - ❌ **DO NOT**: Miss 4-tile sequences (scan systematically)
+   - ❌ **DO NOT**: Recommend worse wait without strong justification
+   - ✅ **DO**: Always check for 4-tile sequences first
+   - ✅ **DO**: Calculate and compare tile acceptance for all wait options
+   - ✅ **DO**: Explain the trade-offs clearly in the solution
+
+10. **Expected value calculation and push/fold analysis** (for push/fold theme problems):
 
    **For YOUR hand**:
    - **DO list all ideal forms** with specific yaku and point values:
