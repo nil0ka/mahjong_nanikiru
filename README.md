@@ -4,6 +4,74 @@
 
 A collection of "What to discard" problems in Mahjong. Problems and explanations can be generated using Claude AI.
 
+## アーキテクチャ / Architecture
+
+### ワークフロー / Workflow
+
+```mermaid
+flowchart LR
+    subgraph Solution["📝 解答生成 / Generate Solution"]
+        A2[👤 ユーザー / User] -->|/create-solution or<br/>python generate_solution.py| B2[🤖 Claude AI]
+        C1 -.->|問題を読み込み / Read Problem| B2
+        B2 -->|解答テキスト / Solution Text| C2[💾 problems/NNN/solution.md]
+    end
+
+    subgraph Question["📝 問題生成 / Generate Question"]
+        A1[👤 ユーザー / User] -->|/create-question or<br/>python generate_question.py| B1[🤖 Claude AI]
+        B1 -->|問題テキスト / Problem Text| C1[💾 problems/NNN/question.md]
+    end
+
+    style A1 fill:#e1f5ff
+    style A2 fill:#e1f5ff
+    style B1 fill:#fff4e1
+    style B2 fill:#fff4e1
+    style C1 fill:#e8f5e9
+    style C2 fill:#e8f5e9
+```
+
+### システムアーキテクチャ概要 / System Architecture Overview
+
+```mermaid
+flowchart TD
+    subgraph Input["入力方法 / Input Methods"]
+        A1[🖥️ Claude Code<br/>Custom Commands]
+        A2[🐍 Python Scripts<br/>Direct Execution]
+    end
+
+    subgraph Core["コア処理 / Core Processing"]
+        B1[📝 generate_question.py<br/>問題生成ロジック]
+        B2[📝 generate_solution.py<br/>解答生成ロジック]
+        B3[🤖 Claude API<br/>Anthropic SDK]
+        B4[🤖 Claude Code AI<br/>Built-in Claude]
+    end
+
+    subgraph Output["出力先 / Output Destinations"]
+        C1[📁 problems/NNN/<br/>question.md]
+        C2[📁 problems/NNN/<br/>solution.md]
+    end
+
+    A1 -->|直接 Claude 使用<br/>Direct Claude usage| B4
+    A2 --> B1
+    A2 --> B2
+
+    B1 --> B3
+    B2 --> B3
+    B4 --> C1
+    B4 --> C2
+
+    B3 --> C1
+    B3 --> C2
+
+    style A1 fill:#e1f5ff
+    style A2 fill:#e1f5ff
+    style B1 fill:#e8eaf6
+    style B2 fill:#e8eaf6
+    style B3 fill:#fff4e1
+    style B4 fill:#fff4e1
+    style C1 fill:#e8f5e9
+    style C2 fill:#e8f5e9
+```
+
 ## 現在の運用 / Current Status
 
 現在は **手動運用** です。Claude Code のカスタムコマンドまたは Python スクリプトを使用して、問題と回答を生成します。
