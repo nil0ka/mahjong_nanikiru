@@ -107,6 +107,29 @@ Claude Code を使用している場合、カスタムコマンドで問題と�
 
 生成されたファイルは `problems/` ディレクトリに保存されます。
 
+### 他の AI エージェント / Other AI Agents
+
+このプロジェクトは複数の AI コーディングエージェントに対応しています：
+
+| AI Agent | 対応状況 | ルールファイル | 使い方 |
+|----------|----------|----------------|--------|
+| **Claude Code** | ✅ 完全対応 | `CLAUDE.md` | `/create-question`, `/create-solution` |
+| **Cline / Roo-Cline** | ✅ 対応 | `.clinerules` | "作問して", "問題005の解答を生成して" |
+| **Cursor** | ✅ 対応 | `.cursorrules` | "麻雀の何切る問題を生成して" |
+| **GitHub Copilot** | ⚠️ 部分対応 | `AI_AGENTS.md` | "AI_AGENTS.mdに従って作問して" |
+
+**使用例:**
+
+```bash
+# Cline / Cursor での使用例
+"作問して"                              # 新しい問題を生成
+"問題005の解答を生成して"                # 問題005の解答を生成
+"難易度7の押し引き問題を作って"          # 難易度7の押し引き問題を生成
+"リーチ判断の問題を作成して"             # リーチ判断問題を生成
+```
+
+詳細は **[AI_AGENTS.md](AI_AGENTS.md)** を参照してください。
+
 ### Python スクリプト（Anthropic API キーが必要）
 
 Anthropic API キーを持っている場合、Python スクリプトを直接実行できます：
@@ -174,6 +197,10 @@ python scripts/list_problems.py --difficulty 5
 ├── .claude/commands/           # Claude Code カスタムコマンド
 │   ├── create-question.md
 │   └── create-solution.md
+├── .clinerules                 # Cline / Roo-Cline 用ルール
+├── .cursorrules                # Cursor 用ルール
+├── AI_AGENTS.md                # 各種 AI エージェント用ガイド
+├── CLAUDE.md                   # Claude Code 詳細仕様（70KB+）
 ├── .github/
 │   └── workflows-disabled/     # 将来の自動化用（現在無効）
 │       ├── create-question.yml

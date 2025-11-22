@@ -1,0 +1,248 @@
+# Mahjong Nanikiru Problem Generator - AI Agent Rules
+
+This repository generates "What to discard" (nanikiru) problems for Mahjong using AI.
+
+## How to Use
+
+When asked to generate problems or solutions, use the Python scripts:
+
+```bash
+# Generate a new problem
+python scripts/generate_question.py
+
+# Generate a problem with specific number
+python scripts/generate_question.py 5
+
+# Generate solution for latest problem
+python scripts/generate_solution.py
+
+# Generate solution for specific problem
+python scripts/generate_solution.py 5
+```
+
+**Example prompts:**
+- "作問して" → Generates next numbered problem
+- "問題005の解答を生成して" → Generates solution for problem 005
+- "リーチ判断の問題を作って" → Generates riichi decision problem
+- "難易度7の押し引き問題を作って" → Generates difficulty 7 push/fold problem
+
+## Critical: Tile Notation Policy
+
+**MANDATORY: Unicode + Numeric Notation (併記)**
+
+To prevent misidentification errors, all problems and solutions MUST use **both Unicode and numeric notation**:
+
+```markdown
+## あなたの手牌（13枚）
+\`\`\`
+🀇🀈🀙🀚🀛🀜🀔🀕🀖🀃🀃🀃🀅
+(1m2m1p2p3p4p5s6s7s北北北發)
+\`\`\`
+
+## ツモ牌
+\`\`\`
+🀝
+(5p)
+\`\`\`
+```
+
+**Why this format:**
+- Unicode tiles provide visual representation
+- Numeric notation prevents misidentification
+- Combining both maximizes readability and accuracy
+
+### Unicode Mahjong Tiles Reference
+
+**CRITICAL**: Always refer to this table when reading or writing tiles:
+
+**萬子 (Manzu)**: 🀇=1m 🀈=2m 🀉=3m 🀊=4m 🀋=5m 🀌=6m 🀍=7m 🀎=8m 🀏=9m
+
+**筒子 (Pinzu)**: 🀙=1p 🀚=2p 🀛=3p 🀜=4p 🀝=5p 🀞=6p 🀟=7p 🀠=8p 🀡=9p
+
+**索子 (Souzu)**: 🀐=1s 🀑=2s 🀒=3s 🀓=4s 🀔=5s 🀕=6s 🀖=7s 🀗=8s 🀘=9s
+
+**字牌 (Honors)**: 🀀=東 🀁=南 🀂=西 🀃=北 🀆=白 🀅=發 🀄=中
+
+## Mahjong Problem Format
+
+Problems must include:
+
+1. **Difficulty level**: 10-point scale (★☆☆☆☆☆☆☆☆☆ 1/10 to ★★★★★★★★★★ 10/10)
+   - 1-2: Very Easy (obvious answer, no calculation)
+   - 3-4: Easy (clear answer with basic analysis)
+   - 5-6: Medium (requires multiple factor analysis)
+   - 7-8: Hard (complex analysis, multiple viable candidates)
+   - 9-10: Very Hard (expert-level, subtle differences)
+
+2. **Theme**: Problem category (e.g., リーチ判断, 手牌選択, 押し引き, 待ち選択, 形式テンパイ, 鳴き判断, 安全牌選択)
+
+3. **Game state**: Round, seat wind, dora indicator, turn number
+
+4. **Hand tiles**: Exactly 14 tiles (13 in hand + 1 drawn tile)
+   - **CRITICAL**: Must specify the drawn tile (ツモ牌) separately
+   - Format: 13-tile hand + 1 tsumo tile
+
+5. **Discards (河)**: Discard piles for all four players
+
+## Critical: Shanten Calculation
+
+**Internal analysis process:**
+1. Read Unicode tiles using reference table (one by one)
+2. **Convert to numeric notation** (e.g., 🀔🀕🀖 → `5s6s7s`)
+3. Analyze hand structure using numeric notation
+4. Verify sequences numerically (5-6-7 is continuous, NOT 4-5-6)
+
+**Calculate shanten for ALL winning patterns:**
+- Standard (4 mentsu + 1 jantou)
+- Chiitoitsu (七対子)
+- Kokushi musou (国士無双)
+- Take the minimum shanten
+
+**Verify problem accuracy:**
+- 14-tile hand (13 + tsumo) shanten matches problem description
+- Test ALL useful tiles to verify claims (e.g., "drawing 4p makes it tenpai")
+- Never trust problem description blindly - always verify independently
+
+## Scoring and Yaku (役)
+
+### Common Yaku
+
+**1 han:**
+- Riichi (立直): Closed only
+- Tanyao (断么九): No terminals/honors
+- Pinfu (平和): All sequences, two-sided wait, non-value pair (closed only)
+- Yakuhai (役牌): Honor triplet (winds, dragons)
+
+**2 han:**
+- Chiitoitsu (七対子): Seven pairs (always 25 fu, closed only)
+- Sanshoku doujun (三色同順): Same sequence in all 3 suits (1 han if open)
+- Toitoi (対々和): All triplets
+
+**3 han:**
+- Honitsu (混一色): One suit + honors (2 han if open)
+- Junchan (純全帯么九): All sets contain terminals (2 han if open)
+
+**6 han:**
+- Chinitsu (清一色): One suit only (5 han if open)
+
+**Dora**: +1 han per dora tile
+
+### Point Calculation
+
+**Child (子) ron scores:**
+- 1 han 30 fu: 1000
+- 2 han 30 fu: 2000
+- 3 han 30 fu: 3900
+- 4 han 30 fu: 7700
+- 5+ han: 8000+ (Mangan or above)
+
+**Chiitoitsu (always 25 fu):**
+- 2 han: 1600
+- 3 han: 3200
+- 4 han: 6400
+
+## Push/Fold (押し引き) Analysis
+
+**Three strategies (NOT just attack/fold binary):**
+
+**1. Waiting strategy (様子見) - DEFAULT for most situations:**
+- Discard relatively safe tiles while keeping hand progression possible
+- Maintains flexibility to shift to attack if hand improves
+- **NOT complete fold** - still has winning possibility
+- Use when: genbutsu available, hand is iishanten with useful tiles, not critical ranking situation
+
+**2. Complete fold (ベタ降り) - ONLY for extreme situations:**
+- Discard only genbutsu for multiple consecutive turns
+- Explicitly abandon all winning possibility
+- Use when: Oorasu + critical ranking + 3+ shanten + multiple genbutsu available
+
+**3. Full attack (全力で攻める) - ONLY when winning is critical:**
+- Discard tiles that progress hand even if dangerous
+- Use when: Oorasu + must win to improve ranking + good hand with high value
+
+**Analysis methodology:**
+
+a. **Analyze YOUR hand's potential:**
+   - List all ideal forms with specific yaku and point values
+   - Use qualitative likelihood: "extremely low", "low", "moderate", "high"
+   - Avoid fabricated percentages without clear basis
+
+b. **Analyze OPPONENT's hand from river:**
+   - Dora visibility: If not visible, opponent likely has dora
+   - Yakuhai visibility: Check which honors are visible/missing
+   - List possible patterns with point ranges
+   - Conclusion: "Since dora not visible, 3 han (3900-5800) or higher likely"
+
+c. **Compare risk vs reward:**
+   - Use qualitative comparison
+   - Consider ranking impact
+   - Default to waiting strategy for most situations
+
+## Genbutsu (現物) - Absolute Safe Tiles
+
+**Genbutsu**: A tile that riichi declarer has already discarded = **100% safe (absolute safety)**
+
+- Look at riichi player's discard pile (河)
+- Any tile visible in their discards is genbutsu
+- Never say "relatively safe" when it's genbutsu - it's ABSOLUTELY safe (0% risk)
+
+## Wait Selection (Tenpai Problems)
+
+**CRITICAL: Always check for multiple wait options**
+
+**4-tile sequences (四連形) - Nobetan:**
+- 1234 → wait 1 or 4 (nobetan)
+- 2345 → wait 2 or 5 (nobetan)
+- 6789 → wait 6 or 9 (nobetan)
+- Example: Discard 1p vs 3p creates different waits (nobetan vs tanki)
+
+**Complex 7-tile multi-way waits:**
+- Pattern: 3+ identical tiles + consecutive numbers + pair
+- Example: 4445688s = 3-way wait (4s, 7s, 8s)
+- Always test ALL possible interpretations
+
+**Validation checklist:**
+- [ ] Did I check for 4-tile sequences?
+- [ ] Did I consider nobetan wait?
+- [ ] Did I check for ankou + consecutive + pair patterns?
+- [ ] Did I calculate tile acceptance for each wait?
+- [ ] Did I compare waits explicitly?
+
+## Point Distribution Validation
+
+**東1局0本場**: All players MUST have exactly 25000 points (starting points)
+- No exceptions - this is the first hand
+- DO NOT use 東1局0本場 for push/fold problems (point situations are critical)
+
+**東1局1本場**: Only possible if dealer won or dealer tenpai draw
+- Dealer's points should have increased or small transfers only
+- NOT possible if dealer's points decreased significantly
+
+**Always verify:**
+- Sum of all four players' points = 100000
+- Dealer position matches round (東1局 = 東家 is dealer)
+- 本場 count matches point distribution story
+
+## File Structure
+
+- `problems/NNN/question.md` - Problems (001, 002, ..., 1000+)
+- `problems/NNN/solution.md` - Solutions
+- `scripts/generate_question.py` - Problem generation script
+- `scripts/generate_solution.py` - Solution generation script
+
+Numbers are zero-padded to 3 digits (001-999), unlimited digits supported (1000+).
+
+## Validation Requirements
+
+When generating solutions, ALWAYS verify:
+
+1. **Accurate tile identification** - Use Unicode reference table
+2. **Independent shanten calculation** - Don't trust problem description blindly
+3. **Accurate tile counting** - Count visible tiles, calculate remaining
+4. **Identify genbutsu correctly** - Check riichi player's river
+5. **Validate recommended discard** - Tile must be in actual hand
+6. **Point distribution consistency** - Sum = 100000, matches round/honba
+7. **Wait selection** - Check for nobetan and multi-way waits
+8. **Push/fold analysis** - List ideal forms, analyze river, use qualitative comparison
+
+For detailed specifications, see CLAUDE.md.
