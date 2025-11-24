@@ -193,10 +193,11 @@ def validate_solution_content(problem_content: str, solution_content: str) -> Tu
 
 def get_latest_problem_number() -> int:
     """
-    最新の問題番号を取得する
+    solution が存在しない最初の問題番号を取得する
+    （全ての問題に solution がある場合はエラーを出力して終了）
 
     Returns:
-        最新の問題番号（整数、最低3桁でゼロパディング）
+        solution が存在しない最初の問題番号（整数）
     """
     if not os.path.exists("problems"):
         print("Error: No problems directory found")
@@ -217,7 +218,24 @@ def get_latest_problem_number() -> int:
         print("Error: No problem directories found")
         sys.exit(1)
 
-    return max(problem_numbers)
+    # 問題番号を昇順にソート
+    problem_numbers.sort()
+
+    # solution が存在しない最初の問題を探す
+    for num in problem_numbers:
+        problem_dir = f"problems/{num:03d}"
+        question_file = f"{problem_dir}/question.md"
+        solution_file = f"{problem_dir}/solution.md"
+
+        # question が存在し、solution が存在しない問題を見つける
+        if os.path.exists(question_file) and not os.path.exists(solution_file):
+            return num
+
+    # 全ての問題に solution が存在する場合
+    print("Error: All problems already have solutions. Please create a new question first.")
+    print(f"Total problems: {len(problem_numbers)}")
+    print(f"All have solutions: problems/001/solution.md through problems/{max(problem_numbers):03d}/solution.md")
+    sys.exit(1)
 
 def generate_solution(problem_content: str, max_retries: int = 3) -> str:
     """
@@ -387,21 +405,34 @@ def generate_solution(problem_content: str, max_retries: int = 3) -> str:
             raise
 
 def main():
-    # 問題番号を取得（引数で指定されていない場合は最新の問題）
+    # 問題番号を取得（引数で指定されていない場合は solution が存在しない最初の問題）
     if len(sys.argv) > 1:
         problem_number = int(sys.argv[1])
     else:
         problem_number = get_latest_problem_number()
 
-    print(f"Generating answer for problem #{problem_number:03d}...")
-
     # 問題ファイルを読み込む
     problem_dir = f"problems/{problem_number:03d}"
     problem_filename = f"{problem_dir}/question.md"
+    solution_filename = f"{problem_dir}/solution.md"
 
     if not os.path.exists(problem_filename):
         print(f"Error: Problem file not found: {problem_filename}")
         sys.exit(1)
+
+    # 既に solution が存在する場合は警告を表示
+    if os.path.exists(solution_filename):
+        if len(sys.argv) > 1:
+            # 引数で明示的に指定された場合は上書きを許可（警告付き）
+            print(f"Warning: Solution already exists at {solution_filename}")
+            print("Overwriting existing solution...")
+        else:
+            # 自動検索の場合はここには到達しないはず（念のためのチェック）
+            print(f"Error: Solution already exists at {solution_filename}")
+            print("This should not happen. Please report this as a bug.")
+            sys.exit(1)
+
+    print(f"Generating solution for problem #{problem_number:03d}...")
 
     with open(problem_filename, "r", encoding="utf-8") as f:
         problem_content = f.read()

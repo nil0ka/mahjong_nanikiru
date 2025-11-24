@@ -7,7 +7,21 @@ description: 既存の何切る問題に対する回答と解説を生成してM
 ## 要件
 
 1. **問題ファイルの読み込み**
-   - `problems/NNN/question.md` を読み込む（NNNは指定または最新の問題番号）
+   - **重要**: solution が存在しない最初の問題を自動検索する
+   - 検索方法（シンプルな bash コマンドを使用）:
+     ```bash
+     # 全ての question 番号を取得
+     ALL_QUESTIONS=$(ls problems/*/question.md 2>/dev/null | sed 's|problems/||; s|/question.md||' | sort -n)
+
+     # solution が存在しない最初の問題を見つける
+     for num in $ALL_QUESTIONS; do
+         if [ ! -f "problems/$num/solution.md" ]; then
+             echo "$num"
+             break
+         fi
+     done
+     ```
+   - 全ての問題に solution が存在する場合: 「全ての問題に solution が作成済みです。新しい問題を作成してください。」と出力して終了
    - 問題が存在しない場合はエラーを出力
 
 2. **回答の生成**
@@ -431,5 +445,11 @@ description: 既存の何切る問題に対する回答と解説を生成してM
 回答を生成した後、ファイルパスを出力してください。
 
 **使用方法**:
-- 引数なし: 最新の問題に対する回答を生成（例: `problems/003/solution.md`）
+- 引数なし: **solution が存在しない最初の問題**に対する回答を自動生成（例: 001-005 に solution があれば `problems/006/solution.md` を生成）
 - 引数あり: 指定した番号の問題に対する回答を生成（例: 引数に1を指定 → `problems/001/solution.md`）
+  - **注意**: 既に solution が存在する場合でも上書きします
+
+**重要な動作**:
+- 既に solution が存在する問題はスキップし、次の未作成の問題を探します
+- 全ての問題に solution が作成済みの場合、その旨を通知して終了します
+- これにより、誤って既存の solution を上書きすることを防ぎます

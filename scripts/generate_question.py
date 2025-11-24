@@ -771,6 +771,22 @@ def main():
     # 今日の日付を取得
     date_str = datetime.now().strftime("%Y-%m-%d")
 
+    # ディレクトリとファイルのパスを準備
+    problem_dir = f"problems/{problem_number:03d}"
+    filename = f"{problem_dir}/question.md"
+
+    # 既に question が存在する場合は警告を表示
+    if os.path.exists(filename):
+        if len(sys.argv) > 1:
+            # 引数で明示的に指定された場合は上書きを許可（警告付き）
+            print(f"Warning: Question already exists at {filename}")
+            print("Overwriting existing question...")
+        else:
+            # 自動採番の場合はここには到達しないはず（念のためのチェック）
+            print(f"Error: Question already exists at {filename}")
+            print("This should not happen. Please report this as a bug.")
+            sys.exit(1)
+
     print(f"Generating problem #{problem_number:03d}...")
 
     # 問題を生成（検証が成功するまでリトライ）
@@ -791,11 +807,9 @@ def main():
                 # 最終的には保存するが、警告を表示
 
     # ディレクトリを作成
-    problem_dir = f"problems/{problem_number:03d}"
     os.makedirs(problem_dir, exist_ok=True)
 
     # ファイルに保存
-    filename = f"{problem_dir}/question.md"
     with open(filename, "w", encoding="utf-8") as f:
         f.write(problem_content)
 
